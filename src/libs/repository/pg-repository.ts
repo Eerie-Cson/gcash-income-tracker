@@ -33,5 +33,5 @@ export abstract class PgRepository<T> implements Repository<T> {
     return result.rowCount > 0;
   }
 
-  abstract create(input: Partial<T>): Promise<boolean>;
+  abstract create(params: { data: Partial<T> }): Promise<boolean>;
 }
