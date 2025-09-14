@@ -1,0 +1,5 @@
+export enum Table {
+  ACCOUNTS = 'ACCOUNTS',
+  TRANSACTIONS = 'TRANSACTIONS',
+  BALANCES = 'BALANCES',
+}
