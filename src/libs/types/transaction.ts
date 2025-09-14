@@ -6,9 +6,7 @@ export type Transaction = {
   transactionDate: Date;
   transactionCode?: string;
   createdAt: Date;
-  createdBy: string;
-  updatedAt?: Date;
-  updatedBy?: string;
+  updatedAt: Date;
 };
 
 export enum TransactionType {

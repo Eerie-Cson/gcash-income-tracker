@@ -1,5 +1,5 @@
 export enum Table {
-  ACCOUNTS = `"Accounts"`,
-  TRANSACTIONS = `"Transactions"`,
-  BALANCES = `"Balances"`,
+  ACCOUNT = `"Account"`,
+  TRANSACTION = `"Transaction"`,
+  WALLET = `"Wallet"`,
 }

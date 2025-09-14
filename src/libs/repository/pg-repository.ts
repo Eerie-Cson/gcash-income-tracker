@@ -1,6 +1,7 @@
+import { snakeCase } from 'change-case';
 import { Pool } from 'pg';
-import { Repository } from './type';
 import { Table } from './const/tables';
+import { Repository } from './type';
 
 export abstract class PgRepository<T> implements Repository<T> {
   constructor(
@@ -33,5 +34,27 @@ export abstract class PgRepository<T> implements Repository<T> {
     return result.rowCount > 0;
   }
 
-  abstract create(params: { data: Partial<T> }): Promise<boolean>;
+  async create(params: {
+    data: Partial<T> & { createdAt: Date; updatedAt: Date };
+  }): Promise<boolean> {
+    const columns = Object.keys(params.data);
+
+    const data = columns.map((key) => {
+      return params.data[key] ? params.data[key] : null;
+    });
+
+    const fields = columns.map((key) => snakeCase(key)).join(', ');
+
+    const values = columns.map((_, index) => `$${index + 1}`).join(', ');
+
+    const query = `INSERT INTO ${this.getTable()} (
+        ${fields}
+      ) VALUES (
+        ${values}
+      )`;
+
+    const result = await this.pool.query(query, data);
+
+    return result.rowCount > 0;
+  }
 }
