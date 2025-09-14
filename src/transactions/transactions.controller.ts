@@ -15,4 +15,9 @@ export class TransactionsController {
   cashIn(@Body() body: CreateTransactionRequest) {
     return this.transactionsService.cashIn(body);
   }
+
+  @Post('cash-out')
+  cashOut(@Body() body: CreateTransactionRequest) {
+    return this.transactionsService.cashOut(body);
+  }
 }

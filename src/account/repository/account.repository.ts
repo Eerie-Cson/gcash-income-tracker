@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Pool } from 'pg';
 import { PgRepository, Repository, Table } from 'src/libs/repository';
-import { Account } from 'src/libs/types/account';
 import { Token } from '../../libs/database/lib/token';
+import { Account } from '../../libs/types';
 
 @Injectable()
 export class AccountRepository

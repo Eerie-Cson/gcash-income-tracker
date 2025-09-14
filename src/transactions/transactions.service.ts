@@ -42,44 +42,49 @@ export class TransactionsService {
     });
   }
 
-  async cashIn(params: CreateTransactionRequest) {
-    const accountId = '7cf43eef-5759-4659-8d9a-d66c711b9705';
-
+  async transfer(
+    params: CreateTransactionRequest & {
+      from: WalletType;
+      to: WalletType;
+      amount: number;
+      transactionType: TransactionType;
+      accountId: string;
+    },
+  ) {
     return this.transactionsRepository.executeTransactions(async (client) => {
-      const cashWallet = await this.walletRepository.findWalletForUpdate(
+      const fromWallet = await this.walletRepository.findWalletForUpdate(
         client,
-        accountId,
-        WalletType.CASH,
+        params.accountId,
+        params.from,
       );
 
-      const gcashWallet = await this.walletRepository.findWalletForUpdate(
+      const toWallet = await this.walletRepository.findWalletForUpdate(
         client,
-        accountId,
-        WalletType.GCASH,
+        params.accountId,
+        params.to,
       );
 
-      if (!cashWallet || !gcashWallet) {
+      if (!fromWallet || !toWallet) {
         throw new Error('Wallet not found');
       }
 
-      if (gcashWallet.balance < params.amount) {
-        throw new Error('Insufficient balance in GCash wallet');
+      if (fromWallet.balance < params.amount) {
+        throw new Error(`Insufficient balance in ${params.from} wallet`);
       }
 
-      const newGcashBalance = Number(gcashWallet.balance) - params.amount;
-
-      const newCashBalance = Number(cashWallet.balance) + params.amount;
+      const newFromBalance = Number(fromWallet.balance) - params.amount;
+      const newToBalance = Number(toWallet.balance) + params.amount;
 
       await this.walletRepository.updateBalance(
         client,
-        cashWallet.id,
-        newCashBalance,
+        fromWallet.id,
+        newFromBalance,
       );
 
       await this.walletRepository.updateBalance(
         client,
-        gcashWallet.id,
-        newGcashBalance,
+        toWallet.id,
+        newToBalance,
       );
 
       await this.transactionsRepository.insertTransaction(client, {
@@ -91,8 +96,32 @@ export class TransactionsService {
         transactionCode: this.generateTransactionCode(Date.now()),
         createdAt: new Date(),
         updatedAt: new Date(),
-        accountId,
+        accountId: params.accountId,
       });
+
+      return { [params.from]: newFromBalance, [params.to]: newToBalance };
+    });
+  }
+
+  async cashIn(params: CreateTransactionRequest) {
+    const accountId = '7cf43eef-5759-4659-8d9a-d66c711b9705';
+    return this.transfer({
+      ...params,
+      from: WalletType.GCASH,
+      to: WalletType.CASH,
+      transactionType: TransactionType.CASH_IN,
+      accountId,
+    });
+  }
+
+  async cashOut(params: CreateTransactionRequest) {
+    const accountId = '7cf43eef-5759-4659-8d9a-d66c711b9705';
+    return this.transfer({
+      ...params,
+      from: WalletType.CASH,
+      to: WalletType.GCASH,
+      transactionType: TransactionType.CASH_OUT,
+      accountId,
     });
   }
 }
