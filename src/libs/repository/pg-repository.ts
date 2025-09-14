@@ -1,5 +1,5 @@
 import { snakeCase } from 'change-case';
-import { Pool } from 'pg';
+import { Pool, PoolClient } from 'pg';
 import { Table } from './const/tables';
 import { Repository } from './type';
 
@@ -56,5 +56,22 @@ export abstract class PgRepository<T> implements Repository<T> {
     const result = await this.pool.query(query, data);
 
     return result.rowCount > 0;
+  }
+
+  async executeTransactions<R>(
+    fn: (client: PoolClient) => Promise<R>,
+  ): Promise<R> {
+    const client = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+      const result = await fn(client);
+      await client.query('COMMIT');
+      return result;
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
   }
 }
