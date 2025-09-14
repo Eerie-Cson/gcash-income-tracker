@@ -1,13 +1,20 @@
 import { Module } from '@nestjs/common';
-import { TransactionsService } from './transactions.service';
-import { TransactionsController } from './transactions.controller';
-import { Token } from './repository/token';
+import { Token as WalletToken } from '../wallet/repository/token';
+import { WalletRepository } from '../wallet/repository/wallet.repository';
+import { Token as TransactionToken } from './repository/token';
 import { TransactionRepository } from './repository/transaction.repository';
+import { TransactionsController } from './transactions.controller';
+import { TransactionsService } from './transactions.service';
 
 @Module({
   controllers: [TransactionsController],
   providers: [
-    { provide: Token.TransactionRepository, useClass: TransactionRepository },
+    {
+      provide: TransactionToken.TransactionRepository,
+      useClass: TransactionRepository,
+    },
+    { provide: WalletToken.WalletRepository, useClass: WalletRepository },
+
     TransactionsService,
   ],
   exports: [TransactionsService],

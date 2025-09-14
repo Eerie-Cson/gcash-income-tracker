@@ -10,4 +10,9 @@ export class TransactionsController {
   create(@Body() body: CreateTransactionRequest) {
     return this.transactionsService.create(body);
   }
+
+  @Post('cash-in')
+  cashIn(@Body() body: CreateTransactionRequest) {
+    return this.transactionsService.cashIn(body);
+  }
 }

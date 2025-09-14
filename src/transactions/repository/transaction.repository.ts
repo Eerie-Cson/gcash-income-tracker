@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Pool } from 'pg';
+import { snakeCase } from 'change-case';
+import { Pool, PoolClient } from 'pg';
 import { Token } from '../../libs/database/lib/token';
 import { PgRepository, Repository, Table } from '../../libs/repository';
 import { Transaction } from '../../libs/types';
@@ -13,26 +14,19 @@ export class TransactionRepository
     super(pool, Table.TRANSACTION);
   }
 
-  // async create(params: {
-  //   data: Partial<Transaction> & { createdAt: Date; updatedAt: Date };
-  // }): Promise<boolean> {
-  //   const columns = Object.keys(params.data);
-
-  //   const data = columns.map((key) => {
-  //     return params.data[key] ? params.data[key] : null;
-  //   });
-
-  //   const fields = columns.map((key) => snakeCase(key)).join(', ');
-
-  //   const query = `INSERT INTO ${this.getTable()} (
-  //     ${fields}
-  //   ) VALUES (
-  //     $1, $2, $3, $4, $5,
-  //     $6, $7, $8
-  //   )`;
-
-  //   const result = await this.pool.query(query, data);
-
-  //   return result.rowCount > 0;
-  // }
+  async insertTransaction(
+    client: PoolClient,
+    data: Partial<Transaction> & {
+      createdAt: Date;
+      updatedAt: Date;
+      accountId: string;
+      transactionCode: string;
+    },
+  ) {
+    const columns = Object.keys(data).map((k) => snakeCase(k));
+    const values = Object.values(data);
+    const placeholders = values.map((_, i) => `$${i + 1}`).join(', ');
+    const query = `INSERT INTO ${this.getTable()} (${columns.join(', ')}) VALUES (${placeholders})`;
+    await client.query(query, values);
+  }
 }

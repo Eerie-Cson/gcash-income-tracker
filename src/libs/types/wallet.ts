@@ -1,10 +1,11 @@
-export type Wallet = {
-  id: string;
+import { Node } from './node';
+
+export type Wallet = Node & {
+  accountId: string;
   balance: number;
   type: WalletType;
   createdAt: Date;
   updatedAt: Date;
-  accountId?: string;
 };
 
 export enum WalletType {
@@ -14,5 +15,5 @@ export enum WalletType {
 
 export type CreateWalletRequest = Omit<
   Partial<Wallet>,
-  'createdAt' | 'updatedAt' | 'id'
+  'createdAt' | 'updatedAt' | 'id' | 'accountId'
 >;

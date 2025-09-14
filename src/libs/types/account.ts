@@ -1,3 +1,4 @@
+import { Node } from './node';
 export type Account = Node & {
   email: string;
   password: string;
