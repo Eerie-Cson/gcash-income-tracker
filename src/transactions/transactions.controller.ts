@@ -1,6 +1,6 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
+import { CreateTransactionRequest } from '../libs/types';
 import { TransactionsService } from './transactions.service';
-import { CreateTransactionRequest } from '../libs/types/transaction';
 
 @Controller('Transactions')
 export class TransactionsController {

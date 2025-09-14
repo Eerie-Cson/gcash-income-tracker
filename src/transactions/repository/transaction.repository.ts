@@ -1,11 +1,9 @@
-import { Transaction } from '../../libs/types/transaction';
-import { Repository } from '../../libs/repository/type';
-import { PgRepository } from 'src/libs/repository/pg-repository';
-import { Table } from '../../libs/repository/const/tables';
 import { Inject, Injectable } from '@nestjs/common';
+import { snakeCase } from 'change-case';
 import { Pool } from 'pg';
 import { Token } from '../../libs/database/lib/token';
-import { snakeCase } from 'change-case';
+import { PgRepository, Repository, Table } from '../../libs/repository';
+import { Transaction } from '../../libs/types';
 
 @Injectable()
 export class TransactionRepository
