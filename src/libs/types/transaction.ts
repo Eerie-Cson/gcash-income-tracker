@@ -1,7 +1,9 @@
-export type Transaction = {
+import { Node } from './node';
+export type Transaction = Node & {
   description?: string;
   amount: number;
-  type: TransactionType;
+  accountId: string;
+  transactionType: TransactionType;
   referenceNumber?: string;
   transactionDate: Date;
   transactionCode?: string;
@@ -22,4 +24,5 @@ export type CreateTransactionRequest = Omit<
   | 'createdBy'
   | 'updatedBy'
   | 'transactionCode'
+  | 'transactionType'
 >;

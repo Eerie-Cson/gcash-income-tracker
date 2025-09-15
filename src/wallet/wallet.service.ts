@@ -71,4 +71,12 @@ export class WalletService {
       type: WalletType.CASH,
     });
   }
+
+  async findWalletForUpdate(client, accountId: string, type: WalletType) {
+    return this.walletRepository.findWalletForUpdate(client, accountId, type);
+  }
+
+  async updateBalance(client, walletId: string, newBalance: number) {
+    return this.walletRepository.updateBalance(client, walletId, newBalance);
+  }
 }

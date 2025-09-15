@@ -4,13 +4,13 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { AccountService } from 'src/account/account.service';
+import { WalletService } from 'src/wallet/wallet.service';
 import {
   CreateTransactionRequest,
   TransactionType,
   WalletType,
 } from '../libs/types';
-import { Token as WalletToken } from '../wallet/repository/token';
-import { WalletRepository } from '../wallet/repository/wallet.repository';
 import { Token as TranasctionToken } from './repository/token';
 import { TransactionRepository } from './repository/transaction.repository';
 
@@ -19,8 +19,8 @@ export class TransactionsService {
   constructor(
     @Inject(TranasctionToken.TransactionRepository)
     private readonly transactionsRepository: TransactionRepository,
-    @Inject(WalletToken.WalletRepository)
-    private walletRepository: WalletRepository,
+    private walletService: WalletService,
+    private accountService: AccountService,
   ) {}
 
   generateTransactionCode(date: number): string {
@@ -39,13 +39,13 @@ export class TransactionsService {
     },
   ) {
     return this.transactionsRepository.executeTransactions(async (client) => {
-      const fromWallet = await this.walletRepository.findWalletForUpdate(
+      const fromWallet = await this.walletService.findWalletForUpdate(
         client,
         params.accountId,
         params.from,
       );
 
-      const toWallet = await this.walletRepository.findWalletForUpdate(
+      const toWallet = await this.walletService.findWalletForUpdate(
         client,
         params.accountId,
         params.to,
@@ -64,22 +64,18 @@ export class TransactionsService {
       const newFromBalance = Number(fromWallet.balance) - params.amount;
       const newToBalance = Number(toWallet.balance) + params.amount;
 
-      await this.walletRepository.updateBalance(
+      await this.walletService.updateBalance(
         client,
         fromWallet.id,
         newFromBalance,
       );
 
-      await this.walletRepository.updateBalance(
-        client,
-        toWallet.id,
-        newToBalance,
-      );
+      await this.walletService.updateBalance(client, toWallet.id, newToBalance);
 
       await this.transactionsRepository.createTransaction(client, {
         description: params.description || undefined,
         amount: params.amount || 0,
-        type: TransactionType.CASH_IN,
+        transactionType: params.transactionType,
         referenceNumber: params.referenceNumber || undefined,
         transactionDate: params.transactionDate || undefined,
         transactionCode: this.generateTransactionCode(Date.now()),
@@ -88,29 +84,54 @@ export class TransactionsService {
         accountId: params.accountId,
       });
 
-      return { [params.from]: newFromBalance, [params.to]: newToBalance };
+      return {
+        [params.from]: newFromBalance,
+        [params.to]: newToBalance,
+        to: params.to,
+        from: params.from,
+        type: params.transactionType,
+      };
     });
   }
 
-  async cashIn(params: CreateTransactionRequest) {
-    const accountId = '7cf43eef-5759-4659-8d9a-d66c711b9705';
+  async cashIn(params: {
+    amount: number;
+    description?: string;
+    referenceNumber?: string;
+    transactionDate: Date;
+    accountId: string;
+  }) {
+    const account = await this.accountService.findById(params.accountId);
+    if (!account) {
+      throw new NotFoundException('Account not found');
+    }
+
     return this.transfer({
       ...params,
       from: WalletType.GCASH,
       to: WalletType.CASH,
       transactionType: TransactionType.CASH_IN,
-      accountId,
+      accountId: account.id,
     });
   }
 
-  async cashOut(params: CreateTransactionRequest) {
-    const accountId = '7cf43eef-5759-4659-8d9a-d66c711b9705';
+  async cashOut(params: {
+    amount: number;
+    description?: string;
+    referenceNumber?: string;
+    transactionDate: Date;
+    accountId: string;
+  }) {
+    const account = await this.accountService.findById(params.accountId);
+    if (!account) {
+      throw new NotFoundException('Account not found');
+    }
     return this.transfer({
       ...params,
       from: WalletType.CASH,
       to: WalletType.GCASH,
       transactionType: TransactionType.CASH_OUT,
-      accountId,
+      accountId: account.id,
     });
   }
 }

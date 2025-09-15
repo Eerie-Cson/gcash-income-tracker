@@ -12,5 +12,6 @@ import { WalletService } from './wallet.service';
     { provide: WalletToken.WalletRepository, useClass: WalletRepository },
     WalletService,
   ],
+  exports: [WalletService],
 })
 export class WalletModule {}
