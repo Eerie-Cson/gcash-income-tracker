@@ -1,6 +1,12 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  NotFoundException,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { NotFoundError } from 'rxjs';
 import { AuthRequest, CreateWalletRequest } from '../libs/types';
 import { WalletService } from './wallet.service';
 
@@ -19,7 +25,7 @@ export class WalletController {
     }
 
     if (!req.user) {
-      throw new NotFoundError('User not found');
+      throw new NotFoundException('User not found');
     }
     return this.walletService.createGcashWallet(body.balance, req.user.userId);
   }
@@ -34,7 +40,7 @@ export class WalletController {
     }
 
     if (!req.user) {
-      throw new NotFoundError('User not found');
+      throw new NotFoundException('User not found');
     }
     return this.walletService.createCashWallet(body.balance, req.user.userId);
   }
