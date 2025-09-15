@@ -44,8 +44,6 @@ export class AuthService {
       name,
     });
 
-    console.log(account);
-
     if (!account) throw new NotImplementedException('Account creation failed');
 
     const payload = { sub: account.id, email: account.email };

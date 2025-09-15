@@ -58,7 +58,6 @@ export abstract class PgRepository<T> implements Repository<T> {
       ) RETURNING *`;
 
     const result = await this.pool.query(query, data);
-    console.log('result: ', result);
 
     return result.rows[0];
   }
