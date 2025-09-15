@@ -6,11 +6,6 @@ import { TransactionsService } from './transactions.service';
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
-  @Post()
-  create(@Body() body: CreateTransactionRequest) {
-    return this.transactionsService.create(body);
-  }
-
   @Post('cash-in')
   cashIn(@Body() body: CreateTransactionRequest) {
     return this.transactionsService.cashIn(body);
