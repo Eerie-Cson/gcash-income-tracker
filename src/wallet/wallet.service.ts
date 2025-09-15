@@ -17,10 +17,15 @@ export class WalletService {
   async create(
     params: Parameters<WalletController['create']>[0],
   ): Promise<boolean> {
-    const account = await this.accountRepository.findSeedAccount();
+    // const account = await this.accountRepository.findSeedAccount();
 
-    if (!account) {
-      throw new Error('Seed account not found');
+    // if (!account) {
+    //   throw new Error('Seed account not found');
+    // }
+
+    const account = '7cf43eef-5759-4659-8d9a-d66c711b9705';
+    if (params.balance && params.balance < 0) {
+      throw new Error('Balance cannot be negative');
     }
 
     return this.walletRepository.create({
@@ -29,7 +34,7 @@ export class WalletService {
         type: params.type,
         createdAt: new Date(),
         updatedAt: new Date(),
-        accountId: account.id,
+        accountId: account,
       },
     });
   }

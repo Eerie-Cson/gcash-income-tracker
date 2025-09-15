@@ -13,9 +13,9 @@ export class AccountRepository
     super(pool, Table.ACCOUNT);
   }
 
-  async findSeedAccount(): Promise<Account> {
-    return this.find({
-      id: '7cf43eef-5759-4659-8d9a-d66c711b9705',
-    });
-  }
+  // async findSeedAccount(): Promise<Account> {
+  //   return this.find({
+  //     id: '7cf43eef-5759-4659-8d9a-d66c711b9705',
+  //   });
+  // }
 }
