@@ -1,5 +1,5 @@
 export interface Repository<T> {
-  create(params: { data: Partial<T> }): Promise<boolean>;
+  create(params: { data: Partial<T> }): Promise<T>;
   fetch(filter?: any): Promise<T[]>;
   find(filter: any): Promise<T | null>;
   // update(id: string, entity: Partial<T>): Promise<T | null>;

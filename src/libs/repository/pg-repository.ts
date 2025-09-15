@@ -18,11 +18,15 @@ export abstract class PgRepository<T> implements Repository<T> {
     return result.rows;
   }
 
-  async find(filter: { id: string }): Promise<T> {
-    const result = await this.pool.query(
-      `SELECT * FROM ${this.table} WHERE id = $1`,
-      [filter.id],
-    );
+  async find(filter: Partial<Record<keyof T, any>>): Promise<T | null> {
+    const conditions = Object.keys(filter)
+      .map((key, index) => `${snakeCase(key)} = $${index + 1}`)
+      .join(' AND ');
+    const values = Object.values(filter);
+
+    const query = `SELECT * FROM ${this.table} WHERE ${conditions} LIMIT 1`;
+
+    const result = await this.pool.query(query, values);
     return result.rows[0];
   }
 
@@ -36,7 +40,7 @@ export abstract class PgRepository<T> implements Repository<T> {
 
   async create(params: {
     data: Partial<T> & { createdAt: Date; updatedAt: Date };
-  }): Promise<boolean> {
+  }): Promise<T> {
     const columns = Object.keys(params.data);
 
     const data = columns.map((key) => {
@@ -51,11 +55,12 @@ export abstract class PgRepository<T> implements Repository<T> {
         ${fields}
       ) VALUES (
         ${values}
-      )`;
+      ) RETURNING *`;
 
     const result = await this.pool.query(query, data);
+    console.log('result: ', result);
 
-    return result.rowCount > 0;
+    return result.rows[0];
   }
 
   async executeTransactions<R>(
