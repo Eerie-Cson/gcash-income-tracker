@@ -10,5 +10,6 @@ import { Token } from './repository/token';
     { provide: Token.AccountRepository, useClass: AccountRepository },
     AccountService,
   ],
+  exports: [AccountService],
 })
 export class AccountModule {}

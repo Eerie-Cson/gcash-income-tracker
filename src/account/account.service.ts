@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateAccountRequest } from '../libs/types/account';
+import { Account, CreateAccountRequest } from '../libs/types/account';
 import { AccountRepository } from './repository/account.repository';
 import { Token } from './repository/token';
 
@@ -10,7 +10,7 @@ export class AccountService {
     private readonly accountRepository: AccountRepository,
   ) {}
 
-  async create(params: CreateAccountRequest): Promise<boolean> {
+  async create(params: CreateAccountRequest): Promise<Account> {
     return this.accountRepository.create({
       data: {
         email: params.email,
@@ -20,5 +20,9 @@ export class AccountService {
         updatedAt: new Date(),
       },
     });
+  }
+
+  async findByEmail(email: string) {
+    return this.accountRepository.find({ email });
   }
 }
