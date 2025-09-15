@@ -13,4 +13,4 @@ export type AccountPayload = {
   role?: string;
 };
 
-export type AuthRequest = Request & { user: AccountPayload };
+export type AuthRequest = Request & { user?: AccountPayload };

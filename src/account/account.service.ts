@@ -25,4 +25,8 @@ export class AccountService {
   async findByEmail(email: string) {
     return this.accountRepository.find({ email });
   }
+
+  async findById(id: string) {
+    return this.accountRepository.find({ id });
+  }
 }

@@ -1,31 +1,31 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { AccountRepository } from '../account/repository/account.repository';
-import { Token as AccountToken } from '../account/repository/token';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { AccountService } from '../account/account.service';
+import { Wallet, WalletType } from '../libs/types';
 import { Token as WalletToken } from './repository/token';
 import { WalletRepository } from './repository/wallet.repository';
-import { WalletController } from './wallet.controller';
 
 @Injectable()
 export class WalletService {
   constructor(
     @Inject(WalletToken.WalletRepository)
     private readonly walletRepository: WalletRepository,
-    @Inject(AccountToken.AccountRepository)
-    private accountRepository: AccountRepository,
+    private accountService: AccountService,
   ) {}
 
-  async create(
-    params: Parameters<WalletController['create']>[0],
-  ): Promise<boolean> {
-    // const account = await this.accountRepository.findSeedAccount();
+  async createWallet(params: {
+    balance: number;
+    accountId: string;
+    type: WalletType;
+  }): Promise<Wallet> {
+    const account = await this.accountService.findById(params.accountId);
 
-    // if (!account) {
-    //   throw new Error('Seed account not found');
-    // }
-
-    const account = '7cf43eef-5759-4659-8d9a-d66c711b9705';
-    if (params.balance && params.balance < 0) {
-      throw new Error('Balance cannot be negative');
+    if (!account) {
+      throw new NotFoundException('Account not found');
     }
 
     return this.walletRepository.create({
@@ -34,8 +34,32 @@ export class WalletService {
         type: params.type,
         createdAt: new Date(),
         updatedAt: new Date(),
-        accountId: account,
+        accountId: params.accountId,
       },
+    });
+  }
+
+  async createGcashWallet(balance: number, accountId: string) {
+    if (balance && balance < 0) {
+      throw new BadRequestException('Balance cannot be negative');
+    }
+
+    return this.createWallet({
+      balance,
+      accountId: accountId,
+      type: WalletType.GCASH,
+    });
+  }
+
+  async createCashWallet(balance: number, accountId: string) {
+    if (balance && balance < 0) {
+      throw new BadRequestException('Balance cannot be negative');
+    }
+
+    return this.createWallet({
+      balance,
+      accountId: accountId,
+      type: WalletType.CASH,
     });
   }
 }

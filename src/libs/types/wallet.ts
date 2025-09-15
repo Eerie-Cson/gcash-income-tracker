@@ -15,5 +15,5 @@ export enum WalletType {
 
 export type CreateWalletRequest = Omit<
   Partial<Wallet>,
-  'createdAt' | 'updatedAt' | 'id' | 'accountId'
+  'createdAt' | 'updatedAt' | 'id' | 'accountId' | 'type'
 >;
