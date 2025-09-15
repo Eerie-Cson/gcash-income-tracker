@@ -1,4 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   CreateTransactionRequest,
   TransactionType,
@@ -8,7 +13,6 @@ import { Token as WalletToken } from '../wallet/repository/token';
 import { WalletRepository } from '../wallet/repository/wallet.repository';
 import { Token as TranasctionToken } from './repository/token';
 import { TransactionRepository } from './repository/transaction.repository';
-import { TransactionsController } from './transactions.controller';
 
 @Injectable()
 export class TransactionsService {
@@ -23,23 +27,6 @@ export class TransactionsService {
     const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
     const timestampPart = date.toString(36).toUpperCase();
     return `TXN-${randomPart}-${timestampPart}`;
-  }
-
-  async create(params: Parameters<TransactionsController['create']>[0]) {
-    const now = Date.now();
-
-    return this.transactionsRepository.create({
-      data: {
-        description: params.description || undefined,
-        amount: params.amount || 0,
-        type: params.type,
-        referenceNumber: params.referenceNumber || undefined,
-        transactionDate: params.transactionDate || undefined,
-        transactionCode: this.generateTransactionCode(now),
-        createdAt: new Date(now),
-        updatedAt: new Date(now),
-      },
-    });
   }
 
   async transfer(
@@ -65,11 +52,13 @@ export class TransactionsService {
       );
 
       if (!fromWallet || !toWallet) {
-        throw new Error('Wallet not found');
+        throw new NotFoundException('Wallet not found');
       }
 
       if (fromWallet.balance < params.amount) {
-        throw new Error(`Insufficient balance in ${params.from} wallet`);
+        throw new BadRequestException(
+          `Insufficient balance in ${params.from} wallet`,
+        );
       }
 
       const newFromBalance = Number(fromWallet.balance) - params.amount;
@@ -87,7 +76,7 @@ export class TransactionsService {
         newToBalance,
       );
 
-      await this.transactionsRepository.insertTransaction(client, {
+      await this.transactionsRepository.createTransaction(client, {
         description: params.description || undefined,
         amount: params.amount || 0,
         type: TransactionType.CASH_IN,

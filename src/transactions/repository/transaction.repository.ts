@@ -14,7 +14,7 @@ export class TransactionRepository
     super(pool, Table.TRANSACTION);
   }
 
-  async insertTransaction(
+  async createTransaction(
     client: PoolClient,
     data: Partial<Transaction> & {
       createdAt: Date;
