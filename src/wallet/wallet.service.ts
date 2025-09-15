@@ -28,6 +28,15 @@ export class WalletService {
       throw new NotFoundException('Account not found');
     }
 
+    const wallets = await this.walletRepository.findAccountWallets(account.id);
+
+    const hasWalletType = wallets?.some((w) => w.type === params.type);
+    if (hasWalletType) {
+      throw new BadRequestException(
+        `Account already has a ${params.type} wallet`,
+      );
+    }
+
     return this.walletRepository.create({
       data: {
         balance: params.balance || 0,

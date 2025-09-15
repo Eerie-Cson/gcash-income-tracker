@@ -27,7 +27,7 @@ export class AuthService {
       // role: account.role,
     };
 
-    const token = this.jwtService.sign(payload, { expiresIn: '15min' });
+    const token = this.jwtService.sign(payload, { expiresIn: '3h' });
     return { accessToken: token };
   }
 
@@ -47,7 +47,7 @@ export class AuthService {
     if (!account) throw new NotImplementedException('Account creation failed');
 
     const payload = { sub: account.id, email: account.email };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '3h' });
 
     return { accessToken };
   }

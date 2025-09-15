@@ -34,4 +34,8 @@ export class WalletRepository
       [newBalance, new Date(), walletId],
     );
   }
+
+  async findAccountWallets(accountId: string): Promise<Wallet[]> {
+    return this.fetch({ accountId });
+  }
 }
