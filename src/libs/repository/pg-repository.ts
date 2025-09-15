@@ -13,21 +13,42 @@ export abstract class PgRepository<T> implements Repository<T> {
     return this.table;
   }
 
-  async fetch(): Promise<T[]> {
-    const result = await this.pool.query(`SELECT * FROM ${this.table}`);
+  private buildWhereClause(filter?: Partial<Record<keyof T, any>>): {
+    clause: string;
+    values: any[];
+  } {
+    if (!filter || Object.keys(filter).length === 0) {
+      return { clause: '', values: [] };
+    }
+
+    const keys = Object.keys(filter);
+    const values = Object.values(filter);
+    const conditions = keys
+      .map((key, index) => `${snakeCase(key)} = $${index + 1}`)
+      .join(' AND ');
+
+    return {
+      clause: `WHERE ${conditions}`,
+      values,
+    };
+  }
+
+  async fetch(filter?: Partial<Record<keyof T, any>>): Promise<T[]> {
+    const { clause, values } = this.buildWhereClause(filter);
+
+    const query = `SELECT * FROM ${this.table} ${clause}`;
+    const result = await this.pool.query(query, values);
+
     return result.rows;
   }
 
   async find(filter: Partial<Record<keyof T, any>>): Promise<T | null> {
-    const conditions = Object.keys(filter)
-      .map((key, index) => `${snakeCase(key)} = $${index + 1}`)
-      .join(' AND ');
-    const values = Object.values(filter);
+    const { clause, values } = this.buildWhereClause(filter);
 
-    const query = `SELECT * FROM ${this.table} WHERE ${conditions} LIMIT 1`;
-
+    const query = `SELECT * FROM ${this.table} ${clause} LIMIT 1`;
     const result = await this.pool.query(query, values);
-    return result.rows[0];
+
+    return result.rows[0] || null;
   }
 
   async delete(filter: { id: string }): Promise<boolean> {
