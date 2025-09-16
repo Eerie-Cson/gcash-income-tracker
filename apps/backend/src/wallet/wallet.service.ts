@@ -83,4 +83,22 @@ export class WalletService {
   async findWallet(accountId: string, type: WalletType) {
     return this.walletRepository.find({ accountId, type });
   }
+
+  async findWallets(accountId: string) {
+    return this.walletRepository.findAccountWallets(accountId);
+  }
+
+  async getBalance(accountId: string, type: WalletType) {
+    const wallet = await this.findWallet(accountId, type);
+    if (!wallet) {
+      throw new NotFoundException('Wallet not found');
+    }
+    return wallet.balance;
+  }
+
+  async getBalances(accountId: string) {
+    const gcashBalance = await this.getBalance(accountId, WalletType.GCASH);
+    const cashBalance = await this.getBalance(accountId, WalletType.CASH);
+    return { gcashBalance, cashBalance };
+  }
 }

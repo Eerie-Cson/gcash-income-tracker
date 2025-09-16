@@ -12,12 +12,28 @@ import { AuthRequest, CreateWalletRequest, WalletType } from '../libs/types';
 import { WalletService } from './wallet.service';
 
 @UseGuards(AuthGuard('jwt'))
-@Controller('wallet')
+@Controller('wallets')
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 
   @Get()
-  getGcashWallet(@Request() req: AuthRequest) {
+  async getWallets(@Request() req: AuthRequest) {
+    if (!req.user) {
+      throw new NotFoundException('User not found');
+    }
+    return this.walletService.findWallets(req.user.userId);
+  }
+
+  @Get('Balances')
+  async getBalances(@Request() req: AuthRequest) {
+    if (!req.user) {
+      throw new NotFoundException('User not found');
+    }
+    return this.walletService.getBalances(req.user.userId);
+  }
+
+  @Get('gcash')
+  async getGcashWallet(@Request() req: AuthRequest) {
     if (!req.user) {
       throw new NotFoundException('User not found');
     }
@@ -25,7 +41,7 @@ export class WalletController {
   }
 
   @Post('create-gcash-wallet')
-  createGcashWallet(
+  async createGcashWallet(
     @Request() req: AuthRequest,
     @Body() body: CreateWalletRequest,
   ) {
