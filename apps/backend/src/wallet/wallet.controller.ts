@@ -1,19 +1,28 @@
 import {
   Body,
   Controller,
+  Get,
   NotFoundException,
   Post,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { AuthRequest, CreateWalletRequest } from '../libs/types';
+import { AuthRequest, CreateWalletRequest, WalletType } from '../libs/types';
 import { WalletService } from './wallet.service';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('wallet')
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}
+
+  @Get()
+  getGcashWallet(@Request() req: AuthRequest) {
+    if (!req.user) {
+      throw new NotFoundException('User not found');
+    }
+    return this.walletService.findWallet(req.user.userId, WalletType.GCASH);
+  }
 
   @Post('create-gcash-wallet')
   createGcashWallet(

@@ -79,4 +79,8 @@ export class WalletService {
   async updateBalance(client, walletId: string, newBalance: number) {
     return this.walletRepository.updateBalance(client, walletId, newBalance);
   }
+
+  async findWallet(accountId: string, type: WalletType) {
+    return this.walletRepository.find({ accountId, type });
+  }
 }
