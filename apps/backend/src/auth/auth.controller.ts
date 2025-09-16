@@ -8,7 +8,17 @@ export class AuthController {
   @Post('login')
   @HttpCode(200)
   async login(@Body() body: { email: string; password: string }) {
-    return this.auth.login(body.email, body.password);
+    const { accessToken, account } = await this.auth.login(
+      body.email,
+      body.password,
+    );
+    if (!accessToken) {
+      return {
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Invalid credentials',
+      };
+    }
+    return { accessToken, account };
   }
 
   @Post('register')

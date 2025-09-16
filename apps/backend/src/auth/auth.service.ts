@@ -7,6 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AccountService } from '../account/account.service';
+import { Account } from '../libs/types';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +15,10 @@ export class AuthService {
     private accountService: AccountService,
     private readonly jwtService: JwtService,
   ) {}
-  async login(email: string, password: string) {
+  async login(
+    email: string,
+    password: string,
+  ): Promise<{ accessToken: string; account: Account }> {
     const account = await this.accountService.findByEmail(email);
 
     if (!account) throw new UnauthorizedException('Invalid credentials');
@@ -28,7 +32,7 @@ export class AuthService {
     };
 
     const token = this.jwtService.sign(payload, { expiresIn: '3h' });
-    return { accessToken: token };
+    return { accessToken: token, account };
   }
 
   async register(email: string, password: string, name: string) {
