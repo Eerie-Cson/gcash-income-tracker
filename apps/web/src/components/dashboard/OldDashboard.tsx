@@ -128,7 +128,7 @@ export default function RedesignedDashboard() {
 			case "medium":
 				return "text-base";
 			default:
-				return "text-lg"; // large by default
+				return "text-lg";
 		}
 	}, [fontSize]);
 
@@ -264,9 +264,9 @@ export default function RedesignedDashboard() {
 
 							<button
 								onClick={() => logout()}
-								className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-slate-200 
-               bg-white text-slate-700 
-               hover:bg-rose-50 hover:border-rose-200 
+								className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-slate-200
+               bg-white text-slate-700
+               hover:bg-rose-50 hover:border-rose-200
                hover:text-rose-600 transition-colors duration-200"
 							>
 								<LogOut className="w-4 h-4" />

@@ -1,19 +1,19 @@
 "use client";
 import { useAuth } from "../contexts/AuthContext";
 import LoginForm from "../components/auth/Login";
-import Dashboard from "../components/Dashboard/Dashboard";
+import Dashboard from "../components/dashboard/Dashboard";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function HomePage() {
 	const router = useRouter();
-	const { user, isLoading, login, register, logout } = useAuth();
+	const { account, isLoading, login, register, logout } = useAuth();
 
 	useEffect(() => {
-		if (!isLoading && user) {
+		if (!isLoading && account) {
 			router.replace("/dashboard");
 		}
-	}, [isLoading, user, router]);
+	}, [isLoading, account, router]);
 
 	if (isLoading) {
 		return (
@@ -23,7 +23,7 @@ export default function HomePage() {
 		);
 	}
 
-	if (!user) {
+	if (!account) {
 		return (
 			<LoginForm
 				onLogin={login}

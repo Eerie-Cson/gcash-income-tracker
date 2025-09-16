@@ -7,14 +7,14 @@ import {
 	ReactNode,
 } from "react";
 
-interface User {
+interface Account {
 	id: string;
 	email: string;
 	name: string;
 }
 
 interface AuthContextType {
-	user: User | null;
+	account: Account | null;
 	register: (email: string, password: string, name: string) => Promise<void>;
 	token: string | null;
 	login: (email: string, password: string) => Promise<boolean>;
@@ -25,12 +25,12 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-	const [user, setUser] = useState<User | null>(null);
+	const [account, setUser] = useState<Account | null>(null);
 	const [token, setToken] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
-		// Check if user is logged in on component mount
+		// Check if account is logged in on component mount
 		const storedToken = localStorage.getItem("authToken");
 		const storedUser = localStorage.getItem("account");
 
@@ -55,11 +55,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 			if (response.ok) {
 				const data = await response.json();
-				console.log(data);
-				setToken(data.token);
+				console.log(data.accessToken);
+				setToken(data.accessToken);
 				setUser(data.account);
-				localStorage.setItem("authToken", data.token);
-				localStorage.setItem("user", JSON.stringify(data.user));
+				localStorage.setItem("authToken", data.accessToken);
+				localStorage.setItem("account", JSON.stringify(data.account));
 				return true;
 			}
 			return false;
@@ -86,9 +86,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			if (response.ok) {
 				const data = await response.json();
 				setToken(data.token);
-				setUser(data.user);
+				setUser(data.account);
 				localStorage.setItem("authToken", data.token);
-				localStorage.setItem("user", JSON.stringify(data.user));
+				localStorage.setItem("account", JSON.stringify(data.account));
 				return;
 			}
 			return;
@@ -102,12 +102,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		setToken(null);
 		setUser(null);
 		localStorage.removeItem("authToken");
-		localStorage.removeItem("user");
+		localStorage.removeItem("account");
 	};
 
 	return (
 		<AuthContext.Provider
-			value={{ user, token, register, login, logout, isLoading }}
+			value={{ account, token, register, login, logout, isLoading }}
 		>
 			{children}
 		</AuthContext.Provider>
