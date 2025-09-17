@@ -1,3 +1,4 @@
+import { getWalletBalances } from "@/api/wallet";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 
@@ -16,17 +17,20 @@ export function useWalletBalances() {
 			try {
 				setLoading(true);
 
-				const res = await fetch("http://localhost:3000/wallets/balances", {
-					headers: { Authorization: `Bearer ${token}` },
-				});
+				// const res = await fetch("http://localhost:3000/wallets/balances", {
+				// 	headers: { Authorization: `Bearer ${token}` },
+				// });
 
-				if (!res.ok) throw new Error(res.statusText);
+				const wallet = await getWalletBalances();
 
-				const parsedResult = await res.json();
+				// console.log("wallet", await res.json());
+				// if (!res.ok) throw new Error(res.statusText);
+
+				// const wallet = await res.json();
 
 				setBalances({
-					cash: Number(parsedResult.cashBalance),
-					gcash: Number(parsedResult.gcashBalance),
+					cash: Number(wallet.cashBalance),
+					gcash: Number(wallet.gcashBalance),
 				});
 			} catch (err: any) {
 				setError(err);

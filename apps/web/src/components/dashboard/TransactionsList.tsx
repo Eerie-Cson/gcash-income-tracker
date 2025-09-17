@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { ArrowDownCircle, ArrowUpCircle } from "lucide-react";
-import { fmt, fmtDate, fmtTime } from "../../utils/formatters";
+import { fmt, fmtSmartDateTime } from "../../utils/formatters";
 
 export default function TransactionsList({
 	transactions = [],
@@ -12,8 +12,8 @@ export default function TransactionsList({
 }) {
 	return (
 		<div className="divide-y divide-slate-100">
-			{transactions.slice(0, 10).map((t) => {
-				const isIn = t.type === "cash-in";
+			{transactions.slice(0, 5).map((t) => {
+				const isIn = t.transaction_type === "Cash-in";
 				return (
 					<div
 						key={t.id}
@@ -42,11 +42,13 @@ export default function TransactionsList({
 										{isIn ? "Cash in" : "Cash out"}
 									</div>
 									<div className="text-xs text-slate-400">
-										• {fmtDate(t.date)} {fmtTime(t.date)}
+										{/* • {fmtDate(t.transaction_date)}{" "}
+										{fmtTime(t.transaction_date)} */}
+										• {fmtSmartDateTime(t.transaction_date)}
 									</div>
 								</div>
 								<div className="text-sm text-slate-500 truncate">
-									Ref: #{t.id} · sample note (tap to add)
+									Ref: #{t.reference_number} · sample note (tap to add)
 								</div>
 							</div>
 						</div>

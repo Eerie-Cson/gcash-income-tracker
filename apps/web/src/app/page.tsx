@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 export default function HomePage() {
 	const router = useRouter();
-	const { account, isLoading, login, register, logout } = useAuth();
+	const { account, isLoading, login, register } = useAuth();
 
 	useEffect(() => {
 		if (!isLoading && account) {

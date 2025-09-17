@@ -6,6 +6,7 @@ import {
 	useState,
 	ReactNode,
 } from "react";
+import { loginApi, registerApi, logoutUser } from "@/api/auth";
 
 interface Account {
 	id: string;
@@ -15,9 +16,9 @@ interface Account {
 
 interface AuthContextType {
 	account: Account | null;
-	register: (email: string, password: string, name: string) => Promise<void>;
 	token: string | null;
 	login: (email: string, password: string) => Promise<boolean>;
+	register: (email: string, password: string, name: string) => Promise<void>;
 	logout: () => void;
 	isLoading: boolean;
 }
@@ -25,89 +26,59 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-	const [account, setUser] = useState<Account | null>(null);
+	const [account, setAccount] = useState<Account | null>(null);
 	const [token, setToken] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
-		// Check if account is logged in on component mount
 		const storedToken = localStorage.getItem("authToken");
 		const storedUser = localStorage.getItem("account");
 
 		if (storedToken && storedUser) {
 			setToken(storedToken);
-			setUser(JSON.parse(storedUser));
+			setAccount(JSON.parse(storedUser));
 		}
 		setIsLoading(false);
 	}, []);
 
 	const login = async (email: string, password: string): Promise<boolean> => {
 		try {
-			const response = await fetch("http://localhost:3000/auth/login", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ email, password }),
-			});
-
-			console.log(response);
-
-			if (response.ok) {
-				const data = await response.json();
-				console.log(data.accessToken);
-				setToken(data.accessToken);
-				setUser(data.account);
-				localStorage.setItem("authToken", data.accessToken);
-				localStorage.setItem("account", JSON.stringify(data.account));
-				return true;
+			const result = await loginApi(email, password);
+			if (!result.success) {
+				return false;
 			}
-			return false;
-		} catch (error) {
-			console.error("Login error:", error);
+
+			const data = result.data;
+			setToken(data.accessToken);
+			setAccount(data.account);
+			localStorage.setItem("authToken", data.accessToken);
+			localStorage.setItem("account", JSON.stringify(data.account));
+			return true;
+		} catch (err) {
+			console.error("Login failed", err);
 			return false;
 		}
 	};
 
-	const register = async (
-		email: string,
-		password: string,
-		name: string
-	): Promise<void> => {
+	const register = async (email: string, password: string, name: string) => {
 		try {
-			const response = await fetch("http://localhost:3000/api/auth/register", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ email, password, name }),
-			});
-
-			if (response.ok) {
-				const data = await response.json();
-				setToken(data.token);
-				setUser(data.account);
-				localStorage.setItem("authToken", data.token);
-				localStorage.setItem("account", JSON.stringify(data.account));
-				return;
-			}
-			return;
-		} catch (error) {
-			console.error("Registration error:", error);
-			return;
+			const data = await registerApi(email, password, name); // { token, account }
+			setToken(data.token);
+			setAccount(data.account);
+			localStorage.setItem("authToken", data.token);
+			localStorage.setItem("account", JSON.stringify(data.account));
+		} catch (err) {
+			console.error("Register failed", err);
 		}
 	};
 
 	const logout = () => {
-		setToken(null);
-		setUser(null);
-		localStorage.removeItem("authToken");
-		localStorage.removeItem("account");
+		logoutUser();
 	};
 
 	return (
 		<AuthContext.Provider
-			value={{ account, token, register, login, logout, isLoading }}
+			value={{ account, token, login, register, logout, isLoading }}
 		>
 			{children}
 		</AuthContext.Provider>
@@ -116,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
 	const context = useContext(AuthContext);
-	if (context === undefined) {
+	if (!context) {
 		throw new Error("useAuth must be used within an AuthProvider");
 	}
 	return context;
