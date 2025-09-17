@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   NotFoundException,
   Post,
   Request,
@@ -15,8 +16,19 @@ import { TransactionsService } from './transactions.service';
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
+  @Get()
+  async getTransactions(@Request() req: AuthRequest) {
+    if (!req.user) {
+      throw new NotFoundException('User not found');
+    }
+    return this.transactionsService.getTransactions(req.user.userId);
+  }
+
   @Post('cash-in')
-  cashIn(@Request() req: AuthRequest, @Body() body: CreateTransactionRequest) {
+  async cashIn(
+    @Request() req: AuthRequest,
+    @Body() body: CreateTransactionRequest,
+  ) {
     if (!req.user) {
       throw new NotFoundException('User not found');
     }
@@ -30,7 +42,10 @@ export class TransactionsController {
   }
 
   @Post('cash-out')
-  cashOut(@Request() req: AuthRequest, @Body() body: CreateTransactionRequest) {
+  async cashOut(
+    @Request() req: AuthRequest,
+    @Body() body: CreateTransactionRequest,
+  ) {
     if (!req.user) {
       throw new NotFoundException('User not found');
     }

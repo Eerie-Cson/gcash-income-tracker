@@ -33,19 +33,32 @@ export abstract class PgRepository<T> implements Repository<T> {
     };
   }
 
-  async fetch(filter?: Partial<Record<keyof T, any>>): Promise<T[]> {
+  async fetch(
+    filter?: Partial<Record<keyof T, any>>,
+    orderBy?: { column: keyof T; direction?: 'ASC' | 'DESC' },
+  ): Promise<T[]> {
     const { clause, values } = this.buildWhereClause(filter);
 
-    const query = `SELECT * FROM ${this.table} ${clause}`;
+    let query = `SELECT * FROM ${this.table} ${clause}`;
+    if (orderBy) {
+      query += ` ORDER BY ${snakeCase(orderBy.column as string)} ${orderBy.direction ?? 'ASC'};`;
+    }
+
     const result = await this.pool.query(query, values);
 
     return result.rows;
   }
 
-  async find(filter: Partial<Record<keyof T, any>>): Promise<T | null> {
+  async find(
+    filter: Partial<Record<keyof T, any>>,
+    orderBy?: { column: keyof T; direction?: 'ASC' | 'DESC' },
+  ): Promise<T | null> {
     const { clause, values } = this.buildWhereClause(filter);
 
-    const query = `SELECT * FROM ${this.table} ${clause} LIMIT 1`;
+    let query = `SELECT * FROM ${this.table} ${clause} LIMIT 1`;
+    if (orderBy) {
+      query += ` ORDER BY ${snakeCase(orderBy.column as string)} ${orderBy.direction ?? 'ASC'};`;
+    }
     const result = await this.pool.query(query, values);
 
     return result.rows[0] || null;

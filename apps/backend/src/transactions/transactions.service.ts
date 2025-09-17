@@ -29,6 +29,19 @@ export class TransactionsService {
     return `TXN-${randomPart}-${timestampPart}`;
   }
 
+  async getTransactions(accountId: string) {
+    return this.transactionsRepository.fetch(
+      {
+        accountId,
+      },
+
+      {
+        column: 'transactionDate',
+        direction: 'DESC',
+      },
+    );
+  }
+
   async transfer(
     params: CreateTransactionRequest & {
       from: WalletType;
@@ -38,6 +51,8 @@ export class TransactionsService {
       accountId: string;
     },
   ) {
+    params.transactionDate = new Date(params.transactionDate);
+
     return this.transactionsRepository.executeTransactions(async (client) => {
       const fromWallet = await this.walletService.findWalletForUpdate(
         client,
