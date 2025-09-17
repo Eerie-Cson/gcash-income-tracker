@@ -17,16 +17,7 @@ export function useWalletBalances() {
 			try {
 				setLoading(true);
 
-				// const res = await fetch("http://localhost:3000/wallets/balances", {
-				// 	headers: { Authorization: `Bearer ${token}` },
-				// });
-
 				const wallet = await getWalletBalances();
-
-				// console.log("wallet", await res.json());
-				// if (!res.ok) throw new Error(res.statusText);
-
-				// const wallet = await res.json();
 
 				setBalances({
 					cash: Number(wallet.cashBalance),

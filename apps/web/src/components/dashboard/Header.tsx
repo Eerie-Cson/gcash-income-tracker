@@ -9,6 +9,15 @@ import {
 	Clock,
 } from "lucide-react";
 
+interface DashboardHeaderProps {
+	userName?: string;
+	notifications?: number;
+	onAddTransaction?: () => void;
+	onExport?: () => void;
+	onNotificationClick?: () => void;
+	accentClass?: string;
+}
+
 const DashboardHeader = ({
 	userName = "John Doe",
 	notifications = 0,
@@ -16,7 +25,7 @@ const DashboardHeader = ({
 	onExport,
 	onNotificationClick,
 	accentClass = "text-emerald-600",
-}: any) => {
+}: DashboardHeaderProps) => {
 	const currentDate = new Date();
 	const formattedDate = currentDate.toLocaleDateString("en-US", {
 		weekday: "long",
@@ -46,7 +55,7 @@ const DashboardHeader = ({
 				{/* Left side - Greeting & Date */}
 				<div className="flex flex-col">
 					<div className="flex items-center gap-3 mb-1">
-						<h1 className="text-2xl lg:text-3xl font-bold text-slate-800">
+						<h1 className={`text-2xl lg:text-3xl font-bold ${accentClass}`}>
 							Good {getGreeting()}, {firstName}!
 						</h1>
 						<div className="hidden sm:flex items-center gap-1 text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
@@ -88,15 +97,10 @@ const DashboardHeader = ({
 						<span className="text-sm font-medium text-slate-700">Export</span>
 					</button>
 
-					{/* Add Transaction Button - Primary CTA */}
+					{/* Add Transaction Button - Primary CTA with accent color */}
 					<button
 						onClick={onAddTransaction}
-						className={`flex items-center gap-2 px-4 py-2 ${accentClass
-							.replace("text-", "bg-")
-							.replace(
-								"-600",
-								"-500"
-							)} text-white rounded-lg hover:opacity-90 transition-opacity font-medium shadow-sm`}
+						className={`flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:opacity-90 transition-opacity font-medium shadow-sm`}
 						aria-label="Add new transaction"
 					>
 						<Plus className="w-4 h-4" />
@@ -130,7 +134,7 @@ const DashboardHeader = ({
 				</div>
 			</div>
 
-			{/* Breadcrumb Navigation */}
+			{/* Breadcrumb Navigation with accent color */}
 			<nav
 				className="flex items-center text-sm text-slate-500 mb-4"
 				aria-label="Breadcrumb navigation"

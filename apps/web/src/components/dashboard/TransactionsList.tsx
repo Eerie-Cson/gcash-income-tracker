@@ -2,18 +2,19 @@
 import React from "react";
 import { ArrowDownCircle, ArrowUpCircle } from "lucide-react";
 import { fmt, fmtSmartDateTime } from "../../utils/formatters";
+import { Transaction, TransactionType } from "@/utils/types";
 
 export default function TransactionsList({
 	transactions = [],
 	compact = false,
 }: {
-	transactions: any[];
+	transactions: Transaction[];
 	compact?: boolean;
 }) {
 	return (
 		<div className="divide-y divide-slate-100">
 			{transactions.slice(0, 5).map((t) => {
-				const isIn = t.transaction_type === "Cash-in";
+				const isIn = t.transactionType === TransactionType.CASH_IN;
 				return (
 					<div
 						key={t.id}
@@ -44,11 +45,11 @@ export default function TransactionsList({
 									<div className="text-xs text-slate-400">
 										{/* • {fmtDate(t.transaction_date)}{" "}
 										{fmtTime(t.transaction_date)} */}
-										• {fmtSmartDateTime(t.transaction_date)}
+										• {fmtSmartDateTime(t.transactionDate)}
 									</div>
 								</div>
 								<div className="text-sm text-slate-500 truncate">
-									Ref: #{t.reference_number} · sample note (tap to add)
+									Ref: #{t.referenceNumber} · {t.description}
 								</div>
 							</div>
 						</div>

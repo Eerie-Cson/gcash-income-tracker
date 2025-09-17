@@ -1,20 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
-
-export enum TransactionType {
-	CASH_IN = "Cash-in",
-	CASH_OUT = "Cash-out",
-}
-
-type Transaction = {
-	description?: string;
-	amount: number;
-	transactionType: TransactionType;
-	referenceNumber?: string;
-	transasctionCode?: string;
-	transactionDate: Date;
-	profit: 0;
-};
+import { Transaction } from "@/utils/types";
 
 export function useGetTransactions() {
 	const { token } = useAuth();
@@ -36,11 +22,11 @@ export function useGetTransactions() {
 				if (!res.ok) throw new Error(res.statusText);
 
 				const parsedResult = await res.json();
-				// console.log(parsedResult);
 
 				setTransactions(
-					parsedResult.map((t: any) => ({
+					parsedResult.map((t: any, i: number) => ({
 						...t,
+						id: (i + 1).toString(),
 						transactionDate: new Date(t.transactionDate),
 						profit: 0,
 					}))

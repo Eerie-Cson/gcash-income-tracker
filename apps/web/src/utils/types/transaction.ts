@@ -1,4 +1,5 @@
 export type Transaction = {
+	id: string;
 	description?: string;
 	amount: number;
 	transactionType: TransactionType;
@@ -8,4 +9,7 @@ export type Transaction = {
 	profit: number;
 };
 
-export type TransactionType = "Cash-in" | "Cash-out";
+export enum TransactionType {
+	CASH_IN = "Cash-in",
+	CASH_OUT = "Cash-out",
+}

@@ -34,6 +34,5 @@ export async function getWalletBalances() {
 			Authorization: `Bearer ${token}`,
 		},
 	});
-	console.log("resAPI", res.data);
 	return res.data;
 }
