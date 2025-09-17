@@ -1,4 +1,4 @@
-import { snakeCase } from 'change-case';
+import { camelCase, snakeCase } from 'change-case';
 import { Pool, PoolClient } from 'pg';
 import { Table } from './const/tables';
 import { Repository } from './type';
@@ -46,9 +46,12 @@ export abstract class PgRepository<T> implements Repository<T> {
 
     const result = await this.pool.query(query, values);
 
-    return result.rows;
+    return result.rows.map((row) =>
+      Object.fromEntries(
+        Object.entries(row).map(([key, value]) => [camelCase(key), value]),
+      ),
+    );
   }
-
   async find(
     filter: Partial<Record<keyof T, any>>,
     orderBy?: { column: keyof T; direction?: 'ASC' | 'DESC' },
