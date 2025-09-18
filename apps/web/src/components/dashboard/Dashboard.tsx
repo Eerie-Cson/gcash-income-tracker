@@ -16,7 +16,7 @@ import KpiCards from "./KpiCards";
 import Stats from "./Stats";
 import TotalBalanceSummary from "./TotalBalanceSummary";
 import TransactionsTable from "./TransactionsTable";
-import TransactionsSection from "../transaction/Transaction";
+import TransactionForm from "../transaction/Transaction";
 
 export default function Dashboard() {
 	const { logout, account } = useAuth();
@@ -79,7 +79,7 @@ export default function Dashboard() {
 	return (
 		<>
 			<div className={`flex h-screen border-r border-blue-300 ${fontClass}`}>
-				<Sidebar
+				{/* <Sidebar
 					nav={nav}
 					active={active}
 					setActive={setActive}
@@ -89,7 +89,7 @@ export default function Dashboard() {
 					logout={logout}
 					collapsed={collapsed}
 					setCollapsed={setCollapsed}
-				/>
+				/> */}
 
 				<main
 					className={`bg-gradient-to-bl from-teal-100 via-white to-teal-100 flex-1 h-screen overflow-auto px-6 py-8 transition-all duration-200 ${

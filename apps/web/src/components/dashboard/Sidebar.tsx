@@ -12,6 +12,7 @@ import {
 	Wallet,
 } from "lucide-react";
 import { WallterType } from "@/utils/types/wallet";
+import { useRouter } from "next/navigation";
 
 export type NavItemId = "dashboard" | "transactions" | "report" | "guide";
 export interface NavItem {
@@ -45,14 +46,16 @@ export default function Sidebar({
 }: SidebarProps) {
 	const totalBal = balances.cash + balances.gcash;
 
+	const router = useRouter();
+
 	return (
 		<aside
-			className={`hidden bg-black md:flex flex-col shrink-0 transition-all duration-200 bg border-r backdrop-blur-sm ${
+			className={`hidden h-screen bg-slate-800 md:flex flex-col shrink-0 transition-all duration-200 bg border-r backdrop-blur-sm ${
 				collapsed ? "w-20 px-2 py-4" : "w-72 px-6 py-6"
 			}`}
 			style={{ minHeight: "100vh" }}
 		>
-			<div className="flex flex-col h-full overflow-y-auto">
+			<div className="flex flex-col flex-1 overflow-y-auto justify-between">
 				{/* Header */}
 				<div
 					className={`mb-6 flex items-center gap-3 ${
@@ -77,7 +80,12 @@ export default function Sidebar({
 						return (
 							<button
 								key={n.id}
-								onClick={() => setActive(n.id)}
+								onClick={() => {
+									setActive(n.id);
+									if (n.id === "transactions") router.push("/transactions");
+									else if (n.id === "dashboard") router.push("/dashboard");
+									else router.push(`/dashboard/${n.id}`);
+								}}
 								title={n.label}
 								className={`group flex items-center gap-3 px-2 py-2 rounded-lg text-left transition-all duration-150 ${
 									selected
