@@ -1,50 +1,54 @@
 // app/(dashboard)/layout.tsx
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import Sidebar, { NavItemId } from "@/components/dashboard/Sidebar";
+import Sidebar from "@/components/dashboard/Sidebar";
 import MobileDrawer from "@/components/mobile/MobileDrawer";
 import SettingsPanel from "@/components/settings/SettingsPanel";
 import { nav } from "@/const/NavigationList";
-import { useWalletBalances } from "@/hooks/useWalletBalance";
-import { useGetTransactions } from "@/hooks/useGetTransactions";
 import { useAuth } from "@/contexts/AuthContext";
 import { fontMap } from "@/const/CustomSettings";
-import { useLocalSettings } from "@/hooks/useLocalSettings";
 import { usePathname } from "next/navigation";
+import {
+	DashboardUIProvider,
+	useDashboardUI,
+} from "../../contexts/DashboardUIContext";
+import { useDashboardData } from "@/hooks/useDashboardData";
 
-export default function DashboardLayout({
-	children,
-}: {
-	children: React.ReactNode;
-}) {
-	const [mobileOpen, setMobileOpen] = useState(false);
-	const [settingsOpen, setSettingsOpen] = useState(false);
-	const [active, setActive] = useState<NavItemId>("dashboard");
-	const [collapsed, setCollapsed] = useState(false);
-
-	const { transactions } = useGetTransactions();
-	const { balances } = useWalletBalances();
+function InnerLayout({ children }: { children: React.ReactNode }) {
+	const { balances, transactions, dashboardStats } = useDashboardData();
 	const { logout } = useAuth();
 
-	const { fontSize } = useLocalSettings({
-		fontSize: "large",
-		compact: false,
-		accent: "emerald",
-	});
+	// UI from context
+	const {
+		mobileOpen,
+		setMobileOpen,
+		settingsOpen,
+		setSettingsOpen,
+		active,
+		setActive,
+		collapsed,
+		setCollapsed,
+		fontSize,
+		setFontSize,
+		compact,
+		setCompact,
+		accent,
+		setAccent,
+	} = useDashboardUI();
 
 	const totalProfit = useMemo(
-		() => transactions.reduce((s, t) => s + (t.profit || 0), 0),
+		() => transactions.reduce((s, t) => s + (t?.profit || 0), 0),
 		[transactions]
 	);
 
 	const fontClass = useMemo(
-		() => fontMap[fontSize] || fontMap.large,
+		() => fontMap[fontSize as keyof typeof fontMap] || fontMap.large,
 		[fontSize]
 	);
 
-	// sync active nav from pathname so button highlight works when you navigate via URL
+	// sync active nav from pathname so button highlight works when navigating via URL
 	const pathname = usePathname();
 	useEffect(() => {
 		if (!pathname) return;
@@ -53,7 +57,8 @@ export default function DashboardLayout({
 			setActive("dashboard");
 		else if (pathname.startsWith("/dashboard/report")) setActive("report");
 		else if (pathname.startsWith("/dashboard/guide")) setActive("guide");
-	}, [pathname]);
+		// no deps on setActive because it's stable from context
+	}, [pathname, setActive]);
 
 	return (
 		<ProtectedRoute>
@@ -82,7 +87,7 @@ export default function DashboardLayout({
 			<MobileDrawer
 				mobileOpen={mobileOpen}
 				nav={nav}
-				setActive={(id: NavItemId) => setActive(id)}
+				setActive={setActive}
 				setMobileOpen={setMobileOpen}
 				setSettingsOpen={setSettingsOpen}
 			/>
@@ -91,12 +96,20 @@ export default function DashboardLayout({
 				open={settingsOpen}
 				setOpen={setSettingsOpen}
 				fontSize={fontSize}
-				setFontSize={() => {}}
-				compact={false}
-				setCompact={() => {}}
-				accent="emerald"
-				setAccent={() => {}}
+				setFontSize={setFontSize}
+				compact={compact}
+				setCompact={setCompact}
+				accent={accent}
+				setAccent={setAccent}
 			/>
 		</ProtectedRoute>
+	);
+}
+
+export default function DashboardLayout(props: { children: React.ReactNode }) {
+	return (
+		<DashboardUIProvider>
+			<InnerLayout {...props} />
+		</DashboardUIProvider>
 	);
 }

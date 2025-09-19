@@ -18,6 +18,7 @@ import {
 	CheckCircle,
 	X,
 } from "lucide-react";
+import { NavigationType } from "@/utils/types";
 
 // Mock data for transactions
 const generateMockTransactions = () => {
@@ -33,7 +34,7 @@ const generateMockTransactions = () => {
 	};
 	const statuses = ["completed", "pending", "failed"];
 
-	return Array.from({ length: 10145 }, (_, i) => ({
+	return Array.from({ length: 1014 }, (_, i) => ({
 		id: `TXN-${String(i + 1).padStart(4, "0")}`,
 		type: types[Math.floor(Math.random() * types.length)],
 		typeLabel: typeLabels[types[Math.floor(Math.random() * types.length)]],

@@ -1,5 +1,5 @@
-// src/app/layout.tsx
 import { AuthProvider } from "../contexts/AuthContext";
+import { DashboardUIProvider } from "../contexts/DashboardUIContext";
 import "./globals.css";
 import type { Metadata } from "next";
 
@@ -16,7 +16,9 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body>
-				<AuthProvider>{children}</AuthProvider>
+				<AuthProvider>
+					<DashboardUIProvider>{children}</DashboardUIProvider>
+				</AuthProvider>
 			</body>
 		</html>
 	);

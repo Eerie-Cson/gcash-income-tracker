@@ -3,6 +3,7 @@ import TransactionsList from "./TransactionsList";
 import { ArrowRight, Filter, Search } from "lucide-react";
 import { Transaction } from "@/utils/types";
 import { NavItemId } from "./Sidebar";
+import { useRouter } from "next/navigation";
 
 interface TransactionsTableProps {
 	accentClass: string;
@@ -32,6 +33,8 @@ const TransactionsTable = ({
 			return new Date(t.transactionDate).toDateString() === today;
 		})
 	);
+
+	const router = useRouter();
 
 	const totalToday = transactions
 		.filter((t: Transaction) => {
@@ -112,7 +115,10 @@ const TransactionsTable = ({
 						Showing latest {recentTransactions.length} transactions
 					</div>
 					<button
-						onClick={() => setActive("transactions")}
+						onClick={() => {
+							setActive("transactions");
+							router.push("/transactions/");
+						}}
 						className={`flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition-all duration-200 text-sm font-medium hover:border-slate-300 group`}
 					>
 						<span>View all transactions</span>

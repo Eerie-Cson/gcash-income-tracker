@@ -1,4 +1,4 @@
-import { useGetTransactions } from "@/hooks/useGetTransactions";
+import { useTransaction } from "@/hooks/useTransactions";
 import { TrendingUp, Calendar, RefreshCw } from "lucide-react";
 import React from "react";
 
@@ -36,7 +36,7 @@ const TotalBalanceSummary = ({
 }: any) => {
 	const growthPercentage = 5.2;
 	const isPositiveGrowth = growthPercentage > 0;
-	const { transactions } = useGetTransactions();
+	const { transactions } = useTransaction();
 
 	const lastUpdated =
 		transactions.length > 0 && transactions[0].transactionDate

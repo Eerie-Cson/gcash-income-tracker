@@ -2,7 +2,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { Transaction } from "@/utils/types";
 
-export function useGetTransactions() {
+export function useTransaction() {
 	const { token } = useAuth();
 	const [transactions, setTransactions] = useState<Transaction[]>([]);
 	const [loading, setLoading] = useState(true);
