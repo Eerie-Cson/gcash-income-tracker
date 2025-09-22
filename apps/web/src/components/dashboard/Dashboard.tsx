@@ -1,37 +1,22 @@
 "use client";
 
-import React, { useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import MobileDrawer from "../mobile/MobileDrawer";
-import SettingsPanel from "../settings/SettingsPanel";
-import TransactionsTable from "./TransactionsTable";
+import { useDashboardUI } from "@/contexts/DashboardUIContext";
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { accentMap, borderMap, fontMap } from "@/utils/types";
+import { useMemo } from "react";
 import DashboardHeader from "./Header";
-import { fontMap, accentMap, borderMap } from "@/utils/types";
 import KpiCards from "./KpiCards";
 import Stats from "./Stats";
 import TotalBalanceSummary from "./TotalBalanceSummary";
-import { useDashboardData } from "@/hooks/useDashboardData";
-import { useDashboardUI } from "@/contexts/DashboardUIContext";
-import { nav } from "@/const/NavigationList";
+import TransactionsTable from "./TransactionsTable";
 
 export default function Dashboard() {
-	const { account, logout } = useAuth();
+	const { account } = useAuth();
 	const { transactions, balances, dashboardStats, totalProfit, totalBalance } =
 		useDashboardData();
 
-	const {
-		mobileOpen,
-		setMobileOpen,
-		settingsOpen,
-		setSettingsOpen,
-		fontSize,
-		setFontSize,
-		compact,
-		setCompact,
-		accent,
-		setAccent,
-		setActive,
-	} = useDashboardUI();
+	const { fontSize, compact, accent, setActive } = useDashboardUI();
 
 	const fontClass = useMemo(
 		() => fontMap[fontSize] || fontMap.large,
@@ -104,8 +89,7 @@ export default function Dashboard() {
 				</footer>
 			</div>
 
-			{/* Keep mobile drawer & settings here in case layout doesn't render them (redundancy safe) */}
-			<MobileDrawer
+			{/* <MobileDrawer
 				mobileOpen={mobileOpen}
 				nav={nav}
 				setActive={() => {}}
@@ -122,7 +106,7 @@ export default function Dashboard() {
 				setCompact={setCompact}
 				accent={accent}
 				setAccent={setAccent}
-			/>
+			/> */}
 		</>
 	);
 }
