@@ -9,7 +9,7 @@ import React, {
 	useMemo,
 } from "react";
 import { useLocalSettings } from "@/hooks/useLocalSettings";
-import { NavItemId } from "@/utils/types";
+import { NavItemId, FontSize, Accent } from "@/utils/types";
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -22,12 +22,12 @@ interface DashboardUI {
 	setActive: SetState<NavItemId>;
 	collapsed: boolean;
 	setCollapsed: SetState<boolean>;
-	fontSize: any; // ideally replace `any` with your FontSize union type exported from useLocalSettings
-	setFontSize: SetState<any>; // <-- important: setter type, not (s: string) => void
+	fontSize: FontSize; // ideally replace `any` with your FontSize union type exported from useLocalSettings
+	setFontSize: SetState<FontSize>; // <-- important: setter type, not (s: string) => void
 	compact: boolean;
 	setCompact: SetState<boolean>;
-	accent: any; // ideally replace with concrete Accent type
-	setAccent: SetState<any>;
+	accent: Accent; // ideally replace with concrete Accent type
+	setAccent: SetState<Accent>;
 }
 
 const DashboardUIContext = createContext<DashboardUI | undefined>(undefined);

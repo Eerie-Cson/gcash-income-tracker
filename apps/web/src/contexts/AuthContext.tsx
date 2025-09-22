@@ -34,21 +34,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		const storedToken = localStorage.getItem("authToken");
 		const storedUser = localStorage.getItem("account");
 
-		if (storedToken && storedUser) {
-			setToken(storedToken);
-			setAccount(JSON.parse(storedUser));
+		if (
+			!storedToken ||
+			!storedUser ||
+			storedToken === undefined ||
+			storedUser === undefined
+		) {
+			console.warn("No stored token or user found in localStorage.");
+			setIsLoading(false);
+			return;
 		}
+
+		try {
+			const parsedUser = JSON.parse(storedUser);
+			if (
+				typeof parsedUser !== "object" ||
+				!parsedUser.id ||
+				!parsedUser.email
+			) {
+				throw new Error("Invalid stored user data.");
+			}
+
+			setToken(storedToken);
+			setAccount(parsedUser);
+		} catch (err) {
+			console.error("Error loading user data from localStorage:", err);
+			localStorage.removeItem("authToken");
+			localStorage.removeItem("account");
+			setToken(null);
+			setAccount(null);
+		}
+
 		setIsLoading(false);
 	}, []);
 
 	const login = async (email: string, password: string): Promise<boolean> => {
 		try {
 			const result = await loginApi(email, password);
-			if (!result.success) {
-				return false;
-			}
 
 			const data = result.data;
+			if (!data.accessToken || !data.account) {
+				throw new Error("Invalid token received during login.");
+			}
 			setToken(data.accessToken);
 			setAccount(data.account);
 			localStorage.setItem("authToken", data.accessToken);
@@ -62,10 +89,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 	const register = async (email: string, password: string, name: string) => {
 		try {
-			const data = await registerApi(email, password, name); // { token, account }
-			setToken(data.token);
+			const data = await registerApi(email, password, name);
+			if (!data.accessToken || !data.account) {
+				throw new Error("Invalid token received after registration.");
+			}
+			setToken(data.accessToken);
 			setAccount(data.account);
-			localStorage.setItem("authToken", data.token);
+			localStorage.setItem("authToken", data.accessToken);
 			localStorage.setItem("account", JSON.stringify(data.account));
 		} catch (err) {
 			console.error("Register failed", err);

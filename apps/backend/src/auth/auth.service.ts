@@ -53,7 +53,7 @@ export class AuthService {
     const payload = { sub: account.id, email: account.email };
     const accessToken = this.jwtService.sign(payload, { expiresIn: '3h' });
 
-    return { accessToken };
+    return { accessToken, account };
   }
 
   async validatePassword(

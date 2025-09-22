@@ -8,7 +8,7 @@ import MobileDrawer from "@/components/mobile/MobileDrawer";
 import SettingsPanel from "@/components/settings/SettingsPanel";
 import { nav } from "@/const/NavigationList";
 import { useAuth } from "@/contexts/AuthContext";
-import { fontMap } from "@/const/CustomSettings";
+import { fontMap } from "@/utils/types";
 import { usePathname } from "next/navigation";
 import {
 	DashboardUIProvider,

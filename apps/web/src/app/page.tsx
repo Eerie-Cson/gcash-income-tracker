@@ -7,10 +7,10 @@ import { useRouter } from "next/navigation";
 
 export default function HomePage() {
 	const router = useRouter();
-	const { account, isLoading, login, register } = useAuth();
+	const { account, isLoading, token, login } = useAuth();
 
 	useEffect(() => {
-		if (!isLoading && account) {
+		if (!isLoading && account && token) {
 			router.replace("/dashboard");
 		}
 	}, [isLoading, account, router]);
@@ -23,12 +23,12 @@ export default function HomePage() {
 		);
 	}
 
-	if (!account) {
+	if (!account || !token) {
 		return (
 			<LoginForm
 				onLogin={login}
 				onRegister={() => {
-					console.log("Go to register page");
+					router.push("/register");
 				}}
 			/>
 		);

@@ -26,6 +26,17 @@ export class AuthController {
   async register(
     @Body() body: { email: string; password: string; name: string },
   ) {
-    return this.auth.register(body.email, body.password, body.name);
+    const { accessToken, account } = await this.auth.register(
+      body.email,
+      body.password,
+      body.name,
+    );
+    if (!accessToken) {
+      return {
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Invalid credentials',
+      };
+    }
+    return { accessToken, account };
   }
 }

@@ -1,8 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-
-type FontSize = "small" | "medium" | "large";
-type Accent = "slate" | "torquoise" | "emerald" | "indigo";
+import { Accent, FontSize } from "@/utils/types";
 
 export function useLocalSettings(initial: {
 	fontSize?: FontSize;

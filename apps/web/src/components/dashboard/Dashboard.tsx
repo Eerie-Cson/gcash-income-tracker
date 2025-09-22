@@ -6,7 +6,7 @@ import MobileDrawer from "../mobile/MobileDrawer";
 import SettingsPanel from "../settings/SettingsPanel";
 import TransactionsTable from "./TransactionsTable";
 import DashboardHeader from "./Header";
-import { fontMap, accentMap, borderMap } from "@/const/CustomSettings";
+import { fontMap, accentMap, borderMap } from "@/utils/types";
 import KpiCards from "./KpiCards";
 import Stats from "./Stats";
 import TotalBalanceSummary from "./TotalBalanceSummary";
@@ -14,10 +14,6 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useDashboardUI } from "@/contexts/DashboardUIContext";
 import { nav } from "@/const/NavigationList";
 
-/**
- * Dashboard component reads UI state from the DashboardUIContext and data from useDashboardData.
- * This keeps the page presentational and prevents duplicating layout-level state.
- */
 export default function Dashboard() {
 	const { account, logout } = useAuth();
 	const { transactions, balances, dashboardStats, totalProfit, totalBalance } =
@@ -38,7 +34,7 @@ export default function Dashboard() {
 	} = useDashboardUI();
 
 	const fontClass = useMemo(
-		() => fontMap[fontSize as keyof typeof fontMap] || fontMap.large,
+		() => fontMap[fontSize] || fontMap.large,
 		[fontSize]
 	);
 	const accentClass = useMemo(
