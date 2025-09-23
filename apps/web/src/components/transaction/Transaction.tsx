@@ -19,6 +19,7 @@ import AddTransactionModal from "./AddTransactionModal";
 import Notification from "../../ui/Notification";
 import { useAddTransaction } from "@/hooks/useAddTransaction";
 import { useNotification } from "@/hooks/useNotification";
+import Link from "next/link";
 
 const TransactionsSection: React.FC = () => {
 	const { transactions, loading, creating, createTransaction } =
@@ -142,9 +143,15 @@ const TransactionsSection: React.FC = () => {
 
 				{/* Breadcrumb */}
 				<nav className="flex items-center text-sm text-slate-500">
-					<span className="hover:text-slate-700 transition-colors cursor-pointer">
+					<Link
+						href="/dashboard"
+						className="hover:text-slate-700 transition-colors cursor-pointer"
+					>
 						Home
-					</span>
+					</Link>
+					{/* <span className="hover:text-slate-700 transition-colors cursor-pointer">
+						Home
+					</span> */}
 					<span className="mx-2 text-slate-400">/</span>
 					<span className="font-medium text-emerald-600 cursor-default">
 						Transactions

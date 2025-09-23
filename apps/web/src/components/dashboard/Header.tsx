@@ -1,13 +1,13 @@
-import React from "react";
 import {
 	Bell,
-	Plus,
+	Clock,
 	Download,
-	Search,
 	Filter,
 	MoreVertical,
-	Clock,
+	Plus,
+	Search,
 } from "lucide-react";
+import Link from "next/link";
 
 interface DashboardHeaderProps {
 	userName?: string;
@@ -139,11 +139,14 @@ const DashboardHeader = ({
 				className="flex items-center text-sm text-slate-500 mb-4"
 				aria-label="Breadcrumb navigation"
 			>
-				<span className="hover:text-slate-700 transition-colors cursor-pointer">
+				<Link
+					href="/dashboard"
+					className="hover:text-slate-700 transition-colors cursor-pointer"
+				>
 					Home
-				</span>
+				</Link>
 				<span className="mx-2 text-slate-400">/</span>
-				<span className={`font-medium ${accentClass} cursor-default`}>
+				<span className={`font-medium ${accentClass} cursor-pointer`}>
 					Dashboard
 				</span>
 			</nav>
