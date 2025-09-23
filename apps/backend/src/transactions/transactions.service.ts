@@ -87,7 +87,7 @@ export class TransactionsService {
 
       await this.walletService.updateBalance(client, toWallet.id, newToBalance);
 
-      await this.transactionsRepository.createTransaction(client, {
+      const transactionDetails = {
         description: params.description || undefined,
         amount: params.amount || 0,
         transactionType: params.transactionType,
@@ -97,7 +97,13 @@ export class TransactionsService {
         createdAt: new Date(),
         updatedAt: new Date(),
         accountId: params.accountId,
-      });
+        customerName: params.customerName,
+        customerPhone: params.customerPhone,
+      };
+      await this.transactionsRepository.createTransaction(
+        client,
+        transactionDetails,
+      );
 
       return {
         [params.from]: newFromBalance,
@@ -105,6 +111,7 @@ export class TransactionsService {
         to: params.to,
         from: params.from,
         type: params.transactionType,
+        data: transactionDetails,
       };
     });
   }

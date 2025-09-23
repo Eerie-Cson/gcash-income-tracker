@@ -13,13 +13,7 @@ import {
 } from "lucide-react";
 import { WallterType } from "@/utils/types/wallet";
 import { useRouter } from "next/navigation";
-
-export type NavItemId = "dashboard" | "transactions" | "report" | "guide";
-export interface NavItem {
-	id: NavItemId;
-	label: string;
-	icon: React.ComponentType<any>;
-}
+import { NavItem, NavItemId } from "@/utils/types";
 
 interface SidebarProps {
 	nav: NavItem[];
@@ -82,7 +76,7 @@ export default function Sidebar({
 									else router.push(`/dashboard/${n.id}`);
 								}}
 								title={n.label}
-								className={`group flex items-center gap-3 px-2 py-2 rounded-lg text-left transition-all duration-150 ${
+								className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-lg text-left transition-all duration-150 ${
 									selected
 										? "bg-gradient-to-r from-emerald-100 to-white shadow-sm"
 										: "hover:bg-emerald-50"

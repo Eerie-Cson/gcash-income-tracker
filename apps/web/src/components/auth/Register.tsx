@@ -1,4 +1,3 @@
-// src/components/auth/RegisterForm.tsx
 "use client";
 import { useState } from "react";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
@@ -32,7 +31,6 @@ export default function RegisterForm({ onRegister }: RegisterFormProps) {
 		setIsLoading(true);
 		try {
 			await onRegister(email, password, name);
-			// AuthContext.register stores token + account to localStorage — navigate to dashboard
 			router.push("/dashboard");
 		} catch (err: any) {
 			console.error("Register error", err);

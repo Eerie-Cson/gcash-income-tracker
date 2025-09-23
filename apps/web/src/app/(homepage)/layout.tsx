@@ -7,6 +7,7 @@ import SettingsPanel from "@/components/settings/SettingsPanel";
 import { nav } from "@/const/NavigationList";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { useTransactionsApi } from "@/hooks/useTransactionsApi";
 import { fontMap } from "@/utils/types";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useMemo } from "react";
@@ -16,7 +17,8 @@ import {
 } from "../../contexts/DashboardUIContext";
 
 function InnerLayout({ children }: { children: React.ReactNode }) {
-	const { balances, transactions, dashboardStats } = useDashboardData();
+	const { transactions } = useTransactionsApi();
+	const { balances } = useDashboardData();
 	const { logout } = useAuth();
 
 	const {

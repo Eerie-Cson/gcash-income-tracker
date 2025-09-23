@@ -1,4 +1,3 @@
-// api/wallet.ts
 import api, { getToken } from "./axios";
 
 const token = getToken();

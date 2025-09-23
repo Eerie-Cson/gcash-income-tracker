@@ -1,20 +1,15 @@
-import { useTransaction } from "@/hooks/useTransactions";
+import { useTransactionsApi } from "@/hooks/useTransactionsApi";
 import { TrendingUp, Calendar, RefreshCw } from "lucide-react";
 import React from "react";
 
-// utils/timeAgo.ts
 export function timeAgo(date?: Date | string): string {
 	if (!date) return "No transactions yet";
 	const now = new Date();
 
-	// Force input date into a Date object
 	const past = typeof date === "string" ? new Date(date) : date;
 
-	// Convert both to "Philippine Standard Time" (UTC+8)
 	const pstNow = new Date();
-	// now.getTime() + now.getTimezoneOffset() * 60000 + 8 * 3600000
 	const pstPast = past;
-	// past.getTime() + past.getTimezoneOffset() * 60000 + 8 * 3600000
 
 	const diffMs = pstNow.getTime() - pstPast.getTime();
 	const diffSec = Math.floor(diffMs / 1000);
@@ -36,7 +31,7 @@ const TotalBalanceSummary = ({
 }: any) => {
 	const growthPercentage = 5.2;
 	const isPositiveGrowth = growthPercentage > 0;
-	const { transactions } = useTransaction();
+	const { transactions } = useTransactionsApi();
 
 	const lastUpdated =
 		transactions.length > 0 && transactions[0].transactionDate
