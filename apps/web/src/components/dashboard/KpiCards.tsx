@@ -45,7 +45,7 @@ const KpiCards = ({
 			iconColor: "text-green-600",
 			icon: BanknoteArrowUp,
 			sparkData: [8, 10, 9, 12, 14],
-			useAccent: false, // Use accent color for this card
+			useAccent: false,
 			bgColor: `bg-green-100`,
 		},
 		{

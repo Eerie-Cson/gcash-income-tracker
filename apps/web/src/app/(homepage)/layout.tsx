@@ -14,9 +14,11 @@ import {
 	DashboardUIProvider,
 	useDashboardUI,
 } from "../../contexts/DashboardUIContext";
+import { useTransactionsApi } from "@/hooks/useTransactionsApi";
 
 function InnerLayout({ children }: { children: React.ReactNode }) {
-	const { balances, transactions, dashboardStats } = useDashboardData();
+	const { transactions } = useTransactionsApi();
+	const { balances } = useDashboardData();
 	const { logout } = useAuth();
 
 	const {

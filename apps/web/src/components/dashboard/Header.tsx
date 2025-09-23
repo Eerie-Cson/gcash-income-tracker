@@ -100,7 +100,7 @@ const DashboardHeader = ({
 					{/* Add Transaction Button - Primary CTA with accent color */}
 					<button
 						onClick={onAddTransaction}
-						className={`flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:opacity-90 transition-opacity font-medium shadow-sm`}
+						className={`cursor-pointer flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:opacity-90 transition-opacity font-medium shadow-sm`}
 						aria-label="Add new transaction"
 					>
 						<Plus className="w-4 h-4" />

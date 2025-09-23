@@ -1,8 +1,7 @@
 import React, { Dispatch, SetStateAction } from "react";
 import TransactionsList from "./TransactionsList";
 import { ArrowRight, Filter, Search } from "lucide-react";
-import { Transaction } from "@/utils/types";
-import { NavItemId } from "./Sidebar";
+import { Transaction, NavItemId } from "@/utils/types";
 import { useRouter } from "next/navigation";
 
 interface TransactionsTableProps {
@@ -17,24 +16,13 @@ const TransactionsTable = ({
 	setActive,
 	compact,
 }: TransactionsTableProps) => {
-	// Get recent transactions (last 5)
+	const router = useRouter();
 	const recentTransactions = transactions.slice(0, 5);
 
-	// Calculate quick stats
 	const todayTransactions = transactions.filter((t: any) => {
 		const today = new Date().toDateString();
 		return new Date(t.transactionDate).toDateString() === today;
 	}).length;
-
-	console.log(
-		"trans: ",
-		transactions.filter((t: Transaction) => {
-			const today = new Date().toDateString();
-			return new Date(t.transactionDate).toDateString() === today;
-		})
-	);
-
-	const router = useRouter();
 
 	const totalToday = transactions
 		.filter((t: Transaction) => {
@@ -119,7 +107,7 @@ const TransactionsTable = ({
 							setActive("transactions");
 							router.push("/transactions/");
 						}}
-						className={`flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition-all duration-200 text-sm font-medium hover:border-slate-300 group`}
+						className={`cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition-all duration-200 text-sm font-medium hover:border-slate-300 group`}
 					>
 						<span>View all transactions</span>
 						<ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />

@@ -1,158 +1,124 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
 	Plus,
 	Search,
-	Filter,
 	Download,
 	Edit3,
 	Trash2,
 	ArrowUpCircle,
 	ArrowDownCircle,
-	Calendar,
-	Clock,
-	RefreshCw,
 	ChevronLeft,
 	ChevronRight,
 	Eye,
 	AlertCircle,
-	CheckCircle,
 	X,
 } from "lucide-react";
-import { NavigationType } from "@/utils/types";
+import { useTransactionsApi } from "@/hooks/useTransactionsApi";
+import { NotificationType, TransactionType } from "@/utils/types";
+import AddTransactionModal from "./AddTransactionModal";
+import Notification from "../../ui/Notification";
+import { useAddTransaction } from "@/hooks/useAddTransaction";
+import { useNotification } from "@/hooks/useNotification";
 
-// Mock data for transactions
-const generateMockTransactions = () => {
-	const types = [
-		"cash-in",
-		"cash-out-profit-included",
-		"cash-out-profit-separate",
-	];
-	const typeLabels = {
-		"cash-in": "Cash In",
-		"cash-out-profit-included": "Cash Out (Profit Included)",
-		"cash-out-profit-separate": "Cash Out (Profit Separate)",
-	};
-	const statuses = ["completed", "pending", "failed"];
+const TransactionsSection: React.FC = () => {
+	const { transactions, loading, creating, createTransaction } =
+		useTransactionsApi();
 
-	return Array.from({ length: 1014 }, (_, i) => ({
-		id: `TXN-${String(i + 1).padStart(4, "0")}`,
-		type: types[Math.floor(Math.random() * types.length)],
-		typeLabel: typeLabels[types[Math.floor(Math.random() * types.length)]],
-		amount: Math.floor(Math.random() * 5000) + 100,
-		profit: Math.floor(Math.random() * 50) + 5,
-		customerName: `Customer ${i + 1}`,
-		customerPhone: `09${Math.floor(Math.random() * 900000000) + 100000000}`,
-		status: statuses[Math.floor(Math.random() * statuses.length)],
-		reference: `REF-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
-		createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
-		notes: Math.random() > 0.7 ? `Note for transaction ${i + 1}` : "",
-	}));
-};
+	const { isOpen, openModal, closeModal } = useAddTransaction();
+	const { notification, showNotification, hideNotification } =
+		useNotification();
 
-const TransactionsSection = () => {
-	const [showAddForm, setShowAddForm] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [filterType, setFilterType] = useState("all");
-	const [filterStatus, setFilterStatus] = useState("all");
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage] = useState(10);
-	const [selectedTransaction, setSelectedTransaction] = useState(null);
-	const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
+	const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
+	const [showDeleteConfirm, setShowDeleteConfirm] = useState<any>(null);
 
-	// Form states
-	const [formData, setFormData] = useState({
-		type: "cash-in",
-		amount: "",
-		customerName: "",
-		customerPhone: "",
-		notes: "",
-	});
+	const allTransactions = transactions ?? [];
 
-	const allTransactions = useMemo(() => generateMockTransactions(), []);
-
-	// Filter and search logic
 	const filteredTransactions = useMemo(() => {
+		const q = searchTerm.trim().toLowerCase();
 		return allTransactions.filter((transaction) => {
 			const matchesSearch =
-				transaction.customerName
-					.toLowerCase()
-					.includes(searchTerm.toLowerCase()) ||
-				transaction.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				transaction.reference
-					.toLowerCase()
-					.includes(searchTerm.toLowerCase()) ||
-				transaction.customerPhone.includes(searchTerm);
+				!q ||
+				(transaction.customerName &&
+					transaction.customerName.toLowerCase().includes(q)) ||
+				(transaction.referenceNumber &&
+					transaction.referenceNumber.toLowerCase().includes(q)) ||
+				(transaction.customerPhone &&
+					transaction.customerPhone.includes(searchTerm));
 
 			const matchesType =
-				filterType === "all" || transaction.type === filterType;
-			const matchesStatus =
-				filterStatus === "all" || transaction.status === filterStatus;
+				filterType === "all" || transaction.transactionType === filterType;
 
-			return matchesSearch && matchesType && matchesStatus;
+			return matchesSearch && matchesType;
 		});
-	}, [allTransactions, searchTerm, filterType, filterStatus]);
+	}, [allTransactions, searchTerm, filterType]);
 
-	// Pagination logic
-	const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+	const totalPages = Math.max(
+		1,
+		Math.ceil(filteredTransactions.length / itemsPerPage)
+	);
 	const startIndex = (currentPage - 1) * itemsPerPage;
-	const paginatedTransactions = filteredTransactions.slice(
-		startIndex,
-		startIndex + itemsPerPage
+	const paginatedTransactions = useMemo(
+		() => filteredTransactions.slice(startIndex, startIndex + itemsPerPage),
+		[filteredTransactions, startIndex, itemsPerPage]
 	);
 
-	const handleAddTransaction = () => {
-		if (!formData.amount || !formData.customerName || !formData.customerPhone) {
-			alert("Please fill in all required fields");
-			return;
-		}
-		console.log("Adding transaction:", formData);
-		setShowAddForm(false);
-		setFormData({
-			type: "cash-in",
-			amount: "",
-			customerName: "",
-			customerPhone: "",
-			notes: "",
-		});
-	};
-
-	const getTransactionIcon = (type) => {
+	const getTransactionIcon = useCallback((type: string) => {
 		switch (type) {
-			case "cash-in":
+			case TransactionType.CASH_IN:
 				return <ArrowUpCircle className="w-4 h-4 text-green-600" />;
-			case "cash-out-profit-included":
-			case "cash-out-profit-separate":
+			case TransactionType.CASH_OUT:
 				return <ArrowDownCircle className="w-4 h-4 text-blue-600" />;
 			default:
 				return <ArrowUpCircle className="w-4 h-4 text-gray-600" />;
 		}
-	};
+	}, []);
 
-	const getStatusBadge = (status) => {
-		const styles = {
-			completed: "bg-green-100 text-green-800 border-green-200",
-			pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
-			failed: "bg-red-100 text-red-800 border-red-200",
-		};
+	const handleAddTransaction = useCallback(
+		async (data: any) => {
+			try {
+				await createTransaction(data);
 
-		const icons = {
-			completed: <CheckCircle className="w-3 h-3" />,
-			pending: <Clock className="w-3 h-3" />,
-			failed: <AlertCircle className="w-3 h-3" />,
-		};
+				const title = "Transaction Created Successfully!";
+				const message = `${data.transactionType} transaction for ${data.customerName} has been added successfully.`;
 
-		return (
-			<span
-				className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${styles[status]}`}
-			>
-				{icons[status]}
-				{status.charAt(0).toUpperCase() + status.slice(1)}
-			</span>
+				showNotification(title, NotificationType.SUCCESS, message);
+
+				closeModal();
+				setCurrentPage(1);
+			} catch (error) {
+				const title = "Transaction Failed";
+				const message =
+					"There was an error creating the transaction. Please try again.";
+
+				showNotification(title, NotificationType.ERROR, message);
+			}
+		},
+		[createTransaction, closeModal, showNotification]
+	);
+	const handleDeleteTransaction = useCallback((id: string) => {
+		if (!confirm(`Delete transaction ${id}? This cannot be undone.`)) return;
+		alert(
+			"Delete is UI-only for now. Implement server delete + refetch to remove permanently."
 		);
-	};
+		setShowDeleteConfirm(null);
+	}, []);
 
 	return (
 		<div className="p-4 md:p-6">
+			<Notification
+				isOpen={notification.isOpen}
+				onClose={hideNotification}
+				type={notification.type}
+				title={notification.title}
+				message={notification.message}
+				duration={5000}
+				autoClose={true}
+				showCloseButton={true}
+			/>
 			<div className="space-y-6">
 				{/* Header */}
 				<div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
@@ -166,8 +132,8 @@ const TransactionsSection = () => {
 					</div>
 
 					<button
-						onClick={() => setShowAddForm(true)}
-						className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium shadow-sm whitespace-nowrap"
+						onClick={openModal}
+						className="cursor-pointer flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium shadow-sm whitespace-nowrap"
 					>
 						<Plus className="w-4 h-4" />
 						Add Transaction
@@ -215,28 +181,8 @@ const TransactionsSection = () => {
 							className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
 						>
 							<option value="all">All Types</option>
-							<option value="cash-in">Cash In</option>
-							<option value="cash-out-profit-included">
-								Cash Out (Profit Included)
-							</option>
-							<option value="cash-out-profit-separate">
-								Cash Out (Profit Separate)
-							</option>
-						</select>
-
-						{/* Status Filter */}
-						<select
-							value={filterStatus}
-							onChange={(e) => {
-								setFilterStatus(e.target.value);
-								setCurrentPage(1);
-							}}
-							className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-						>
-							<option value="all">All Status</option>
-							<option value="completed">Completed</option>
-							<option value="pending">Pending</option>
-							<option value="failed">Failed</option>
+							<option value={TransactionType.CASH_IN}>Cash In</option>
+							<option value={TransactionType.CASH_OUT}>Cash Out</option>
 						</select>
 
 						{/* Export Button */}
@@ -246,7 +192,6 @@ const TransactionsSection = () => {
 						</button>
 					</div>
 
-					{/* Results Summary */}
 					<div className="mt-4 text-sm text-slate-600">
 						Showing {startIndex + 1}-
 						{Math.min(startIndex + itemsPerPage, filteredTransactions.length)}{" "}
@@ -273,9 +218,6 @@ const TransactionsSection = () => {
 										Amount
 									</th>
 									<th className="text-left px-6 py-4 text-sm font-medium text-slate-700">
-										Status
-									</th>
-									<th className="text-left px-6 py-4 text-sm font-medium text-slate-700">
 										Date
 									</th>
 									<th className="text-left px-6 py-4 text-sm font-medium text-slate-700">
@@ -291,17 +233,18 @@ const TransactionsSection = () => {
 									>
 										<td className="px-6 py-4">
 											<div className="flex items-center gap-3">
-												{getTransactionIcon(transaction.type)}
+												{getTransactionIcon(transaction.transactionType)}
 												<div>
 													<div className="font-medium text-slate-900">
-														{transaction.id}
+														{transaction.transactionCode || "Loading..."}
 													</div>
 													<div className="text-sm text-slate-500">
-														{transaction.reference}
+														{transaction.referenceNumber}
 													</div>
 												</div>
 											</div>
 										</td>
+
 										<td className="px-6 py-4">
 											<div>
 												<div className="font-medium text-slate-900">
@@ -312,37 +255,59 @@ const TransactionsSection = () => {
 												</div>
 											</div>
 										</td>
+
 										<td className="px-6 py-4">
-											<span className="text-sm text-slate-700">
-												{transaction.typeLabel}
+											<span
+												className={`inline-block rounded-full border text-sm font-medium text-center
+													sm:text-xs sm:px-2 sm:py-0.5 w-20
+													whitespace-nowrap overflow-hidden text-ellipsis
+													${
+														transaction.transactionType ===
+														TransactionType.CASH_IN
+															? "text-green-600 bg-teal-100 border-emerald-600"
+															: "text-blue-600 bg-indigo-100 border-blue-400"
+													}
+												`}
+											>
+												{transaction.transactionType === TransactionType.CASH_IN
+													? "Cash In"
+													: "Cash Out"}
 											</span>
 										</td>
+
 										<td className="px-6 py-4">
 											<div>
 												<div className="font-medium text-slate-900">
-													₱{transaction.amount.toLocaleString()}
+													₱{Number(transaction.amount).toLocaleString()}
 												</div>
 												<div className="text-sm text-emerald-600">
-													+₱{transaction.profit} profit
+													+₱{transaction.profit ?? 0} profit
 												</div>
 											</div>
 										</td>
-										<td className="px-6 py-4">
-											{getStatusBadge(transaction.status)}
-										</td>
+
 										<td className="px-6 py-4">
 											<div>
 												<div className="text-sm text-slate-900">
-													{transaction.createdAt.toLocaleDateString()}
+													{transaction.transactionDate
+														? new Date(
+																transaction.transactionDate
+														  ).toLocaleDateString()
+														: "-"}
 												</div>
 												<div className="text-sm text-slate-500">
-													{transaction.createdAt.toLocaleTimeString([], {
-														hour: "2-digit",
-														minute: "2-digit",
-													})}
+													{transaction.transactionDate
+														? new Date(
+																transaction.transactionDate
+														  ).toLocaleTimeString([], {
+																hour: "2-digit",
+																minute: "2-digit",
+														  })
+														: "-"}
 												</div>
 											</div>
 										</td>
+
 										<td className="px-6 py-4">
 											<div className="flex items-center gap-2">
 												<button
@@ -359,7 +324,9 @@ const TransactionsSection = () => {
 													<Edit3 className="w-4 h-4" />
 												</button>
 												<button
-													onClick={() => setShowDeleteConfirm(transaction.id)}
+													onClick={() =>
+														setShowDeleteConfirm(transaction.transactionCode)
+													}
 													className="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50"
 													title="Delete transaction"
 												>
@@ -369,6 +336,19 @@ const TransactionsSection = () => {
 										</td>
 									</tr>
 								))}
+
+								{paginatedTransactions.length === 0 && (
+									<tr>
+										<td
+											colSpan={6}
+											className="px-6 py-8 text-center text-sm text-slate-500"
+										>
+											{loading
+												? "Loading transactions..."
+												: "No transactions found."}
+										</td>
+									</tr>
+								)}
 							</tbody>
 						</table>
 					</div>
@@ -390,18 +370,13 @@ const TransactionsSection = () => {
 									<ChevronLeft className="w-4 h-4" />
 								</button>
 
-								{/* Page numbers */}
 								{Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
 									let pageNum;
-									if (totalPages <= 5) {
-										pageNum = i + 1;
-									} else if (currentPage <= 3) {
-										pageNum = i + 1;
-									} else if (currentPage >= totalPages - 2) {
+									if (totalPages <= 5) pageNum = i + 1;
+									else if (currentPage <= 3) pageNum = i + 1;
+									else if (currentPage >= totalPages - 2)
 										pageNum = totalPages - 4 + i;
-									} else {
-										pageNum = currentPage - 2 + i;
-									}
+									else pageNum = currentPage - 2 + i;
 
 									return (
 										<button
@@ -433,137 +408,13 @@ const TransactionsSection = () => {
 				</div>
 
 				{/* Add Transaction Modal */}
-				{showAddForm && (
-					<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-						<div className="bg-white rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-							<div className="p-6">
-								<div className="flex items-center justify-between mb-6">
-									<h2 className="text-xl font-bold text-slate-900">
-										Add New Transaction
-									</h2>
-									<button
-										onClick={() => setShowAddForm(false)}
-										className="p-2 hover:bg-slate-100 rounded-lg"
-									>
-										<X className="w-5 h-5" />
-									</button>
-								</div>
 
-								<div className="space-y-4">
-									<div>
-										<label className="block text-sm font-medium text-slate-700 mb-2">
-											Transaction Type
-										</label>
-										<select
-											value={formData.type}
-											onChange={(e) =>
-												setFormData({ ...formData, type: e.target.value })
-											}
-											className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-											required
-										>
-											<option value="cash-in">Cash In</option>
-											<option value="cash-out-profit-included">
-												Cash Out (Profit Included)
-											</option>
-											<option value="cash-out-profit-separate">
-												Cash Out (Profit Separate)
-											</option>
-										</select>
-									</div>
-
-									<div>
-										<label className="block text-sm font-medium text-slate-700 mb-2">
-											Amount (₱)
-										</label>
-										<input
-											type="number"
-											value={formData.amount}
-											onChange={(e) =>
-												setFormData({ ...formData, amount: e.target.value })
-											}
-											className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-											placeholder="Enter amount"
-											min="1"
-											required
-										/>
-									</div>
-
-									<div>
-										<label className="block text-sm font-medium text-slate-700 mb-2">
-											Customer Name
-										</label>
-										<input
-											type="text"
-											value={formData.customerName}
-											onChange={(e) =>
-												setFormData({
-													...formData,
-													customerName: e.target.value,
-												})
-											}
-											className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-											placeholder="Enter customer name"
-											required
-										/>
-									</div>
-
-									<div>
-										<label className="block text-sm font-medium text-slate-700 mb-2">
-											Customer Phone
-										</label>
-										<input
-											type="tel"
-											value={formData.customerPhone}
-											onChange={(e) =>
-												setFormData({
-													...formData,
-													customerPhone: e.target.value,
-												})
-											}
-											className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-											placeholder="09XXXXXXXXX"
-											pattern="[0-9]{11}"
-											required
-										/>
-									</div>
-
-									<div>
-										<label className="block text-sm font-medium text-slate-700 mb-2">
-											Notes (Optional)
-										</label>
-										<textarea
-											value={formData.notes}
-											onChange={(e) =>
-												setFormData({ ...formData, notes: e.target.value })
-											}
-											className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-											placeholder="Add any additional notes..."
-											rows="3"
-										/>
-									</div>
-
-									<div className="flex gap-3 pt-4">
-										<button
-											type="button"
-											onClick={() => setShowAddForm(false)}
-											className="flex-1 px-4 py-2 border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50"
-										>
-											Cancel
-										</button>
-										<button
-											type="button"
-											onClick={handleAddTransaction}
-											className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
-										>
-											Add Transaction
-										</button>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				)}
+				<AddTransactionModal
+					isOpen={isOpen}
+					onClose={closeModal}
+					onSubmit={handleAddTransaction}
+					isCreating={creating}
+				/>
 
 				{/* Transaction Details Modal */}
 				{selectedTransaction && (
@@ -595,7 +446,9 @@ const TransactionsSection = () => {
 									<div className="flex items-center justify-between">
 										<span className="text-sm text-slate-600">Type</span>
 										<span className="font-medium">
-											{selectedTransaction.typeLabel}
+											{selectedTransaction.type === "cash-in"
+												? "Cash In"
+												: "Cash Out"}
 										</span>
 									</div>
 
@@ -614,20 +467,15 @@ const TransactionsSection = () => {
 									<div className="flex items-center justify-between">
 										<span className="text-sm text-slate-600">Amount</span>
 										<span className="font-medium">
-											₱{selectedTransaction.amount.toLocaleString()}
+											₱{Number(selectedTransaction.amount).toLocaleString()}
 										</span>
 									</div>
 
 									<div className="flex items-center justify-between">
 										<span className="text-sm text-slate-600">Profit</span>
 										<span className="font-medium text-emerald-600">
-											₱{selectedTransaction.profit.toLocaleString()}
+											₱{(selectedTransaction.profit ?? 0).toLocaleString()}
 										</span>
-									</div>
-
-									<div className="flex items-center justify-between">
-										<span className="text-sm text-slate-600">Status</span>
-										{getStatusBadge(selectedTransaction.status)}
 									</div>
 
 									<div className="flex items-center justify-between">
@@ -641,13 +489,21 @@ const TransactionsSection = () => {
 										<span className="text-sm text-slate-600">Date & Time</span>
 										<div className="text-right">
 											<div className="font-medium">
-												{selectedTransaction.createdAt.toLocaleDateString()}
+												{selectedTransaction.transactionDate
+													? new Date(
+															selectedTransaction.transactionDate
+													  ).toLocaleDateString()
+													: "-"}
 											</div>
 											<div className="text-sm text-slate-500">
-												{selectedTransaction.createdAt.toLocaleTimeString([], {
-													hour: "2-digit",
-													minute: "2-digit",
-												})}
+												{selectedTransaction.transactionDate
+													? new Date(
+															selectedTransaction.transactionDate
+													  ).toLocaleTimeString([], {
+															hour: "2-digit",
+															minute: "2-digit",
+													  })
+													: "-"}
 											</div>
 										</div>
 									</div>
@@ -700,10 +556,7 @@ const TransactionsSection = () => {
 										Cancel
 									</button>
 									<button
-										onClick={() => {
-											console.log("Deleting transaction:", showDeleteConfirm);
-											setShowDeleteConfirm(null);
-										}}
+										onClick={() => handleDeleteTransaction(showDeleteConfirm)}
 										className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
 									>
 										Delete

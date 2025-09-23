@@ -9,7 +9,9 @@ CREATE TABLE IF NOT EXISTS "Transaction" (
     "transaction_date" TIMESTAMP NOT NULL,
     "transaction_code" TEXT,
     "created_at" TIMESTAMP NOT NULL,
-    "updated_at" TIMESTAMP                 
+    "updated_at" TIMESTAMP      
+    "customer_name" TEXT 
+    "customer_phone" TEXT         
 );
 
 
