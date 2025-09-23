@@ -1,4 +1,3 @@
-// src/api/auth.ts
 import api from "./axios";
 
 export async function loginApi(email: string, password: string) {
@@ -26,7 +25,6 @@ export function logoutUser() {
 	localStorage.removeItem("authToken");
 	localStorage.removeItem("account");
 
-	// force redirect to login page
 	if (typeof window !== "undefined") {
 		window.location.href = "/";
 	}

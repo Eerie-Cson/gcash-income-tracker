@@ -1,4 +1,3 @@
-// src/api/axios.ts
 import axios from "axios";
 import { logoutUser } from "./auth";
 
@@ -10,13 +9,12 @@ export function getToken() {
 }
 
 const api = axios.create({
-	baseURL: "http://localhost:3000", // adjust if needed
+	baseURL: "http://localhost:3000",
 	headers: {
 		"Content-Type": "application/json",
 	},
 });
 
-// Add token automatically to requests
 api.interceptors.request.use((config) => {
 	const token = getToken();
 	if (token) {

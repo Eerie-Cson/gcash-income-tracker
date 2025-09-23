@@ -6,7 +6,9 @@ export type Transaction = Node & {
   transactionType: TransactionType;
   referenceNumber?: string;
   transactionDate: Date;
-  transactionCode?: string;
+  transactionCode: string;
+  customerName?: string;
+  customerPhone?: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -24,5 +26,4 @@ export type CreateTransactionRequest = Omit<
   | 'createdBy'
   | 'updatedBy'
   | 'transactionCode'
-  | 'transactionType'
 >;

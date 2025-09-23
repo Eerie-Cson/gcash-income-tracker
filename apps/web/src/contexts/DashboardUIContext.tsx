@@ -1,4 +1,3 @@
-// app/(dashboard)/DashboardUIContext.tsx
 "use client";
 
 import React, {
@@ -22,11 +21,11 @@ interface DashboardUI {
 	setActive: SetState<NavItemId>;
 	collapsed: boolean;
 	setCollapsed: SetState<boolean>;
-	fontSize: FontSize; // ideally replace `any` with your FontSize union type exported from useLocalSettings
-	setFontSize: SetState<FontSize>; // <-- important: setter type, not (s: string) => void
+	fontSize: FontSize;
+	setFontSize: SetState<FontSize>;
 	compact: boolean;
 	setCompact: SetState<boolean>;
-	accent: Accent; // ideally replace with concrete Accent type
+	accent: Accent;
 	setAccent: SetState<Accent>;
 }
 
@@ -38,7 +37,6 @@ export function DashboardUIProvider({ children }: { children: ReactNode }) {
 	const [active, setActive] = useState<NavItemId>("dashboard");
 	const [collapsed, setCollapsed] = useState(false);
 
-	// useLocalSettings already returns setters of the proper type
 	const { fontSize, setFontSize, compact, setCompact, accent, setAccent } =
 		useLocalSettings({
 			fontSize: "large",

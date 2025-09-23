@@ -14,7 +14,6 @@ export const fmtTime = (d: Date | string) => {
 
 export const fmtSmartDateTime = (input: Date | string) => {
 	const date = typeof input === "string" ? new Date(input) : input;
-	// const date = new Date(utcDate.getTime() + 8 * 60 * 60 * 1000);
 
 	if (isNaN(date.getTime())) return "Invalid date";
 

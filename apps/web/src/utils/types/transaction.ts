@@ -4,7 +4,7 @@ export type Transaction = {
 	amount: number;
 	transactionType: TransactionType;
 	referenceNumber?: string;
-	transasctionCode?: string;
+	transactionCode?: string;
 	transactionDate: Date;
 	profit: number;
 };

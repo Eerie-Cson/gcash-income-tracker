@@ -1,26 +1,26 @@
-// app/(dashboard)/layout.tsx
 "use client";
 
-import React, { useEffect, useMemo } from "react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import Sidebar from "@/components/dashboard/Sidebar";
 import MobileDrawer from "@/components/mobile/MobileDrawer";
 import SettingsPanel from "@/components/settings/SettingsPanel";
 import { nav } from "@/const/NavigationList";
 import { useAuth } from "@/contexts/AuthContext";
+import { useDashboardData } from "@/hooks/useDashboardData";
 import { fontMap } from "@/utils/types";
 import { usePathname } from "next/navigation";
+import React, { useEffect, useMemo } from "react";
 import {
 	DashboardUIProvider,
 	useDashboardUI,
 } from "../../contexts/DashboardUIContext";
-import { useDashboardData } from "@/hooks/useDashboardData";
+import { useTransactionsApi } from "@/hooks/useTransactionsApi";
 
 function InnerLayout({ children }: { children: React.ReactNode }) {
-	const { balances, transactions, dashboardStats } = useDashboardData();
+	const { transactions } = useTransactionsApi();
+	const { balances } = useDashboardData();
 	const { logout } = useAuth();
 
-	// UI from context
 	const {
 		mobileOpen,
 		setMobileOpen,
@@ -48,7 +48,6 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 		[fontSize]
 	);
 
-	// sync active nav from pathname so button highlight works when navigating via URL
 	const pathname = usePathname();
 	useEffect(() => {
 		if (!pathname) return;
@@ -57,7 +56,6 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 			setActive("dashboard");
 		else if (pathname.startsWith("/dashboard/report")) setActive("report");
 		else if (pathname.startsWith("/dashboard/guide")) setActive("guide");
-		// no deps on setActive because it's stable from context
 	}, [pathname, setActive]);
 
 	return (
