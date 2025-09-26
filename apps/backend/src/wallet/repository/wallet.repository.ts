@@ -1,7 +1,12 @@
 import { Inject } from '@nestjs/common';
 import { Pool, PoolClient } from 'pg';
 import { Token } from '../../libs/database/lib/token';
-import { PgRepository, Repository, Table } from '../../libs/repository';
+import {
+  PgRepository,
+  Repository,
+  Table,
+  PaginationResult,
+} from '../../libs/repository';
 import { Wallet, WalletType } from '../../libs/types/wallet';
 
 export class WalletRepository

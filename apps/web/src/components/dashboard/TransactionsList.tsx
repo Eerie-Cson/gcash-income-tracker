@@ -43,8 +43,6 @@ export default function TransactionsList({
 										{isIn ? "Cash in" : "Cash out"}
 									</div>
 									<div className="text-xs text-slate-400">
-										{/* • {fmtDate(t.transaction_date)}{" "}
-										{fmtTime(t.transaction_date)} */}
 										• {fmtSmartDateTime(t.transactionDate)}
 									</div>
 								</div>

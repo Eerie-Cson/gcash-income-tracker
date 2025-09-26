@@ -8,6 +8,7 @@ import { AccountService } from 'src/account/account.service';
 import { WalletService } from 'src/wallet/wallet.service';
 import {
   CreateTransactionRequest,
+  Transaction,
   TransactionType,
   WalletType,
 } from '../libs/types';
@@ -39,6 +40,58 @@ export class TransactionsService {
         column: 'transactionDate',
         direction: 'DESC',
       },
+    );
+  }
+
+  async getPaginatedTransactions(params: {
+    id: string;
+    options: {
+      page: number;
+      pageSize: number;
+      searchTerm?: string;
+      filterType?: string;
+      orderBy?: string;
+      orderDirection?: 'ASC' | 'DESC';
+    };
+  }) {
+    const { id, options } = params;
+
+    // Build the base filter
+    const baseFilter: any = { accountId: id };
+
+    if (options.filterType) {
+      baseFilter.transactionType = options.filterType;
+    }
+
+    // Prepare repository options
+    const repoOptions: any = {
+      pagination: {
+        page: options.page,
+        limit: options.pageSize,
+      },
+    };
+
+    if (options.orderBy) {
+      repoOptions.orderBy = {
+        column: options.orderBy as any,
+        direction: options.orderDirection || 'DESC',
+      };
+    }
+
+    // Use the enhanced repository with search support
+    return this.transactionsRepository.paginate(
+      baseFilter,
+      repoOptions,
+      options.searchTerm
+        ? {
+            term: options.searchTerm,
+            fields: [
+              'customerName',
+              'referenceNumber',
+              'customerPhone',
+            ] as any[],
+          }
+        : undefined,
     );
   }
 
