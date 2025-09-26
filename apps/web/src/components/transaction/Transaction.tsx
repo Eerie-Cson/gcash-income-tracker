@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import {
 	Plus,
 	Search,
@@ -22,8 +22,14 @@ import { useNotification } from "@/hooks/useNotification";
 import Link from "next/link";
 
 const TransactionsSection: React.FC = () => {
-	const { transactions, loading, creating, createTransaction } =
-		useTransactionsApi();
+	const {
+		transactions,
+		pagination,
+		loading,
+		creating,
+		createTransaction,
+		refetch,
+	} = useTransactionsApi();
 
 	const { isOpen, openModal, closeModal } = useAddTransaction();
 	const { notification, showNotification, hideNotification } =
@@ -36,35 +42,62 @@ const TransactionsSection: React.FC = () => {
 	const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState<any>(null);
 
-	const allTransactions = transactions ?? [];
+	// const allTransactions = transactions ?? [];
 
-	const filteredTransactions = useMemo(() => {
-		const q = searchTerm.trim().toLowerCase();
-		return allTransactions.filter((transaction) => {
-			const matchesSearch =
-				!q ||
-				(transaction.customerName &&
-					transaction.customerName.toLowerCase().includes(q)) ||
-				(transaction.referenceNumber &&
-					transaction.referenceNumber.toLowerCase().includes(q)) ||
-				(transaction.customerPhone &&
-					transaction.customerPhone.includes(searchTerm));
+	// const filteredTransactions = useMemo(() => {
+	// 	const q = searchTerm.trim().toLowerCase();
+	// 	return allTransactions.filter((transaction) => {
+	// 		const matchesSearch =
+	// 			!q ||
+	// 			(transaction.customerName &&
+	// 				transaction.customerName.toLowerCase().includes(q)) ||
+	// 			(transaction.referenceNumber &&
+	// 				transaction.referenceNumber.toLowerCase().includes(q)) ||
+	// 			(transaction.customerPhone &&
+	// 				transaction.customerPhone.includes(searchTerm));
 
-			const matchesType =
-				filterType === "all" || transaction.transactionType === filterType;
+	// 		const matchesType =
+	// 			filterType === "all" || transaction.transactionType === filterType;
 
-			return matchesSearch && matchesType;
-		});
-	}, [allTransactions, searchTerm, filterType]);
+	// 		return matchesSearch && matchesType;
+	// 	});
+	// }, [allTransactions, searchTerm, filterType]);
 
-	const totalPages = Math.max(
-		1,
-		Math.ceil(filteredTransactions.length / itemsPerPage)
-	);
-	const startIndex = (currentPage - 1) * itemsPerPage;
-	const paginatedTransactions = useMemo(
-		() => filteredTransactions.slice(startIndex, startIndex + itemsPerPage),
-		[filteredTransactions, startIndex, itemsPerPage]
+	// const totalPages = Math.max(
+	// 	1,
+	// 	Math.ceil(filteredTransactions.length / itemsPerPage)
+	// );
+	// const startIndex = (currentPage - 1) * itemsPerPage;
+	// const paginatedTransactions = useMemo(
+	// 	() => filteredTransactions.slice(startIndex, startIndex + itemsPerPage),
+	// 	[filteredTransactions, startIndex, itemsPerPage]
+	// );
+
+	useEffect(() => {
+		const timeoutId = setTimeout(() => {
+			refetch({
+				page: 1,
+				limit: itemsPerPage,
+				search: searchTerm,
+				type: filterType,
+			});
+			setCurrentPage(1);
+		}, 500);
+
+		return () => clearTimeout(timeoutId);
+	}, [searchTerm, filterType, refetch, itemsPerPage]);
+
+	const handlePageChange = useCallback(
+		(page: number) => {
+			setCurrentPage(page);
+			refetch({
+				page,
+				limit: itemsPerPage,
+				search: searchTerm,
+				type: filterType,
+			});
+		},
+		[refetch, itemsPerPage, searchTerm, filterType]
 	);
 
 	const getTransactionIcon = useCallback((type: string) => {
@@ -82,6 +115,7 @@ const TransactionsSection: React.FC = () => {
 		async (data: any) => {
 			try {
 				await createTransaction(data);
+				console.log("formData: ", data);
 
 				const title = "Transaction Created Successfully!";
 				const message = `${data.transactionType} transaction for ${data.customerName} has been added successfully.`;
@@ -91,6 +125,7 @@ const TransactionsSection: React.FC = () => {
 				closeModal();
 				setCurrentPage(1);
 			} catch (error) {
+				console.error("Transaction creation failed:", error);
 				const title = "Transaction Failed";
 				const message =
 					"There was an error creating the transaction. Please try again.";
@@ -169,10 +204,7 @@ const TransactionsSection: React.FC = () => {
 									type="text"
 									placeholder="Search by customer name, transaction ID, reference..."
 									value={searchTerm}
-									onChange={(e) => {
-										setSearchTerm(e.target.value);
-										setCurrentPage(1);
-									}}
+									onChange={(e) => setSearchTerm(e.target.value)}
 									className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
 								/>
 							</div>
@@ -181,10 +213,7 @@ const TransactionsSection: React.FC = () => {
 						{/* Type Filter */}
 						<select
 							value={filterType}
-							onChange={(e) => {
-								setFilterType(e.target.value);
-								setCurrentPage(1);
-							}}
+							onChange={(e) => setFilterType(e.target.value)}
 							className="px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
 						>
 							<option value="all">All Types</option>
@@ -200,9 +229,9 @@ const TransactionsSection: React.FC = () => {
 					</div>
 
 					<div className="mt-4 text-sm text-slate-600">
-						Showing {startIndex + 1}-
-						{Math.min(startIndex + itemsPerPage, filteredTransactions.length)}{" "}
-						of {filteredTransactions.length} transactions
+						Showing {(currentPage - 1) * itemsPerPage + 1}-
+						{Math.min(currentPage * itemsPerPage, pagination.total)} of{" "}
+						{pagination.total} transactions
 					</div>
 				</div>
 
@@ -233,7 +262,7 @@ const TransactionsSection: React.FC = () => {
 								</tr>
 							</thead>
 							<tbody className="divide-y divide-slate-200">
-								{paginatedTransactions.map((transaction) => (
+								{transactions.map((transaction) => (
 									<tr
 										key={transaction.id}
 										className="hover:bg-slate-50 transition-colors"
@@ -344,7 +373,7 @@ const TransactionsSection: React.FC = () => {
 									</tr>
 								))}
 
-								{paginatedTransactions.length === 0 && (
+								{transactions.length === 0 && (
 									<tr>
 										<td
 											colSpan={6}
@@ -364,47 +393,46 @@ const TransactionsSection: React.FC = () => {
 					<div className="px-6 py-4 border-t border-slate-200 bg-slate-50">
 						<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
 							<div className="text-sm text-slate-600">
-								Page {currentPage} of {totalPages}
+								Page {currentPage} of {pagination.totalPages}
 							</div>
 							<div className="flex items-center gap-2">
 								<button
-									onClick={() =>
-										setCurrentPage((prev) => Math.max(prev - 1, 1))
-									}
-									disabled={currentPage === 1}
+									onClick={() => handlePageChange(currentPage - 1)}
+									disabled={!pagination.hasPrev}
 									className="p-2 rounded-lg border border-slate-200 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
 								>
 									<ChevronLeft className="w-4 h-4" />
 								</button>
 
-								{Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-									let pageNum;
-									if (totalPages <= 5) pageNum = i + 1;
-									else if (currentPage <= 3) pageNum = i + 1;
-									else if (currentPage >= totalPages - 2)
-										pageNum = totalPages - 4 + i;
-									else pageNum = currentPage - 2 + i;
+								{Array.from(
+									{ length: Math.min(5, pagination.totalPages) },
+									(_, i) => {
+										let pageNum;
+										if (pagination.totalPages <= 5) pageNum = i + 1;
+										else if (currentPage <= 3) pageNum = i + 1;
+										else if (currentPage >= pagination.totalPages - 2)
+											pageNum = pagination.totalPages - 4 + i;
+										else pageNum = currentPage - 2 + i;
 
-									return (
-										<button
-											key={pageNum}
-											onClick={() => setCurrentPage(pageNum)}
-											className={`px-3 py-1.5 rounded-lg text-sm ${
-												currentPage === pageNum
-													? "bg-emerald-600 text-white"
-													: "border border-slate-200 hover:bg-white"
-											}`}
-										>
-											{pageNum}
-										</button>
-									);
-								})}
+										return (
+											<button
+												key={pageNum}
+												onClick={() => handlePageChange(pageNum)}
+												className={`px-3 py-1.5 rounded-lg text-sm ${
+													currentPage === pageNum
+														? "bg-emerald-600 text-white"
+														: "border border-slate-200 hover:bg-white"
+												}`}
+											>
+												{pageNum}
+											</button>
+										);
+									}
+								)}
 
 								<button
-									onClick={() =>
-										setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-									}
-									disabled={currentPage === totalPages}
+									onClick={() => handlePageChange(currentPage + 1)}
+									disabled={!pagination.hasNext}
 									className="p-2 rounded-lg border border-slate-200 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed"
 								>
 									<ChevronRight className="w-4 h-4" />

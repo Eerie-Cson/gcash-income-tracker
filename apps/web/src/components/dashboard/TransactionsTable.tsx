@@ -33,7 +33,6 @@ const TransactionsTable = ({
 
 	return (
 		<section className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-			{/* Enhanced Header */}
 			<div className="p-6 pb-4 border-b border-slate-50">
 				<div className="flex items-center justify-between mb-3">
 					<div>

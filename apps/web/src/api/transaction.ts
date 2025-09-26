@@ -3,13 +3,33 @@ import api, { getToken } from "./axios";
 
 const token = getToken();
 
-export async function getTransactions() {
-	const res = await api.get("/Transactions", {
+export async function getTransactions(params?: {
+	page?: number;
+	pageSize?: number;
+	search?: string;
+	type?: string;
+	orderBy?: string;
+	orderDirection?: "ASC" | "DESC";
+}) {
+	const queryParams = new URLSearchParams();
+
+	if (params?.page) queryParams.append("page", params.page.toString());
+	if (params?.pageSize)
+		queryParams.append("pageSize", params.pageSize.toString());
+
+	if (params?.search) queryParams.append("search", params.search);
+	if (params?.type) queryParams.append("type", params.type);
+	if (params?.orderBy) queryParams.append("orderBy", params.orderBy);
+	if (params?.orderDirection)
+		queryParams.append("orderDirection", params.orderDirection);
+
+	const res = await api.get(`/transactions?${queryParams.toString()}`, {
 		headers: {
 			"Content-Type": "application/json",
 			Authorization: `Bearer ${token}`,
 		},
 	});
+
 	return res.data;
 }
 

@@ -1,3 +1,4 @@
+// hooks/useTransactionsApi
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getTransactions, transferTransaction } from "@/api/transaction";
@@ -10,6 +11,7 @@ type CreatePayload = {
 	customerPhone?: string;
 	notes?: string;
 	referenceNumber?: string;
+	transactionDate: Date;
 };
 
 type CustomerTransaction = Transaction & {
@@ -18,41 +20,78 @@ type CustomerTransaction = Transaction & {
 	customerPhone?: string;
 };
 
+type PaginationData = {
+	data: CustomerTransaction[];
+	total: number;
+	page: number;
+	totalPages: number;
+	hasNext: boolean;
+	hasPrev: boolean;
+};
+
 export function useTransactionsApi() {
 	const { token } = useAuth();
 
-	const [transactions, setTransactions] = useState<CustomerTransaction[]>([]);
+	const [paginationData, setPaginationData] = useState<PaginationData>({
+		data: [],
+		total: 0,
+		page: 1,
+		totalPages: 1,
+		hasNext: false,
+		hasPrev: false,
+	});
 	const [loading, setLoading] = useState(true);
 	const [creating, setCreating] = useState(false);
 	const [error, setError] = useState<Error | null>(null);
 
-	const fetchTransactions = useCallback(async () => {
-		if (!token) return;
-		setLoading(true);
-		setError(null);
+	const fetchPaginatedTransactions = useCallback(
+		async (
+			params: {
+				page?: number;
+				limit?: number;
+				search?: string;
+				type?: string;
+			} = {}
+		) => {
+			if (!token) return;
+			setLoading(true);
+			setError(null);
 
-		try {
-			const data = await getTransactions();
-			setTransactions(
-				(data || []).map((t: any, i: number) => ({
-					...t,
-					id: t.id ?? (i + 1).toString(),
-					transactionDate: t.transactionDate
-						? new Date(t.transactionDate)
-						: new Date(),
-					profit: t.profit ?? 0,
-				}))
-			);
-		} catch (err: any) {
-			setError(err instanceof Error ? err : new Error(String(err)));
-		} finally {
-			setLoading(false);
-		}
-	}, [token]);
+			try {
+				const data = await getTransactions({
+					page: params.page || 1,
+					pageSize: params.limit || 10,
+					search: params.search,
+					type: params.type,
+					orderBy: "transactionDate",
+					orderDirection: "DESC",
+				});
+
+				setPaginationData({
+					data: (data.data || []).map((t: Transaction, i: number) => ({
+						...t,
+						id: t.id ?? (i + 1).toString(),
+						transactionDate: new Date(t.transactionDate),
+						profit: t.profit ?? 0,
+					})),
+					total: data.total || 0,
+					page: data.page || 1,
+					totalPages: data.totalPages || 1,
+					hasNext: data.hasNext || false,
+					hasPrev: data.hasPrev || false,
+				});
+			} catch (err: any) {
+				setError(err instanceof Error ? err : new Error(String(err)));
+			} finally {
+				setLoading(false);
+			}
+		},
+		[token]
+	);
 
 	useEffect(() => {
-		fetchTransactions();
-	}, [fetchTransactions]);
+		fetchPaginatedTransactions({ page: 1, limit: 10 });
+	}, [fetchPaginatedTransactions]);
 
 	const createTransaction = useCallback(
 		async (payload: CreatePayload) => {
@@ -64,55 +103,38 @@ export function useTransactionsApi() {
 			setError(null);
 
 			try {
-				const { data: newTransaction } = await transferTransaction({
+				await transferTransaction({
 					transactionType: payload.transactionType,
 					amount: payload.amount,
 					description: payload.notes,
 					referenceNumber: payload.referenceNumber,
 					profit: 0,
-					transactionDate: new Date().toISOString(),
+					transactionDate: new Date(payload.transactionDate).toISOString(),
 					customerName: payload.customerName,
 					customerPhone: payload.customerPhone,
 				});
 
-				console.log("API Response:", newTransaction);
-
-				setTransactions((prev) => [
-					{
-						...newTransaction,
-						id: newTransaction.id ?? Date.now().toString(),
-						transactionDate: new Date(
-							newTransaction.transactionDate || new Date()
-						),
-						profit: newTransaction.profit ?? 0,
-						transactionCode: newTransaction.transactionCode,
-						customerName: payload.customerName,
-						customerPhone: payload.customerPhone,
-						referenceNumber: payload.referenceNumber,
-						transactionType: payload.transactionType,
-					},
-					...prev,
-				]);
+				// Refetch the first page to show the new transaction
+				await fetchPaginatedTransactions({ page: 1 });
 
 				return true;
 			} catch (err: any) {
 				setError(err instanceof Error ? err : new Error(String(err)));
-				await fetchTransactions();
 				throw err;
 			} finally {
 				setCreating(false);
 			}
 		},
-		[token, fetchTransactions]
+		[token, fetchPaginatedTransactions]
 	);
 
 	return {
-		transactions,
+		transactions: paginationData.data,
+		pagination: paginationData,
 		loading,
 		creating,
 		error,
-		refetch: fetchTransactions,
+		refetch: fetchPaginatedTransactions,
 		createTransaction,
-		setTransactions, // keep setter for convenience/tests
 	} as const;
 }

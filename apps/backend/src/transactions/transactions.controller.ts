@@ -4,6 +4,7 @@ import {
   Get,
   NotFoundException,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -22,6 +23,32 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @Get()
+  async getPaginatedTransactions(
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 10,
+    @Query('search') searchTerm: string,
+    @Query('type') filterType: string,
+    @Query('orderBy') orderBy: string = 'transactionDate',
+    @Query('orderDirection') orderDirection: 'ASC' | 'DESC' = 'DESC',
+    @Request() req: AuthRequest,
+  ) {
+    if (!req.user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return this.transactionsService.getPaginatedTransactions({
+      id: req.user.userId,
+      options: {
+        page: Math.max(1, page),
+        pageSize: Math.min(50, Math.max(1, pageSize)),
+        searchTerm,
+        filterType: filterType === 'all' ? undefined : filterType,
+        orderBy,
+        orderDirection,
+      },
+    });
+  }
+  @Get('list')
   async getTransactions(@Request() req: AuthRequest) {
     if (!req.user) {
       throw new NotFoundException('User not found');

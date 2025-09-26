@@ -17,6 +17,7 @@ import {
 	Wallet,
 	XCircle,
 	AlertTriangle,
+	Calendar,
 } from "lucide-react";
 import { TransactionType } from "@/utils/types";
 
@@ -27,6 +28,7 @@ interface FormData {
 	customerPhone: string;
 	reference: string;
 	notes: string;
+	transactionDate: string;
 }
 
 interface ValidationErrors {
@@ -34,6 +36,7 @@ interface ValidationErrors {
 	customerName?: string;
 	customerPhone?: string;
 	reference?: string;
+	transactionDate?: string;
 }
 
 const MOCK_BALANCES = {
@@ -49,6 +52,11 @@ const formatCurrency = (amount: number) => {
 	}).format(amount);
 };
 
+const getCurrentDate = () => {
+	const today = new Date();
+	return today.toISOString().split("T")[0];
+};
+
 const AddTransactionModal = ({
 	isOpen = true,
 	onClose = () => {},
@@ -59,6 +67,7 @@ const AddTransactionModal = ({
 		customerPhone: string;
 		referenceNumber: string;
 		notes: string;
+		transactionDate: string;
 	}) => {},
 	isCreating = false,
 }) => {
@@ -69,6 +78,7 @@ const AddTransactionModal = ({
 		customerPhone: "",
 		reference: "",
 		notes: "",
+		transactionDate: "", // Empty by default - user must set it
 	});
 
 	const [errors, setErrors] = useState<ValidationErrors>({});
@@ -83,6 +93,7 @@ const AddTransactionModal = ({
 				customerPhone: "",
 				reference: "",
 				notes: "",
+				transactionDate: "",
 			});
 			setErrors({});
 		}
@@ -100,9 +111,11 @@ const AddTransactionModal = ({
 			newErrors.amount = "Amount cannot exceed ₱1,000,000";
 		}
 
-		if (!formData.customerName.trim()) {
-			newErrors.customerName = "Customer name is required";
-		} else if (formData.customerName.trim().length < 2) {
+		// Customer name is now optional, but if provided, must be at least 2 characters
+		if (
+			formData.customerName.trim() &&
+			formData.customerName.trim().length < 2
+		) {
 			newErrors.customerName = "Customer name must be at least 2 characters";
 		}
 
@@ -117,6 +130,17 @@ const AddTransactionModal = ({
 			newErrors.reference = "Reference number is required";
 		} else if (formData.reference.trim().length < 3) {
 			newErrors.reference = "Reference must be at least 3 characters";
+		}
+
+		if (!formData.transactionDate) {
+			newErrors.transactionDate = "Transaction date and time are required";
+		} else {
+			const selectedDate = new Date(formData.transactionDate);
+			const now = new Date();
+
+			if (selectedDate > now) {
+				newErrors.transactionDate = "Transaction date cannot be in the future";
+			}
 		}
 
 		return newErrors;
@@ -148,6 +172,7 @@ const AddTransactionModal = ({
 				customerPhone: formData.customerPhone.replace(/\s+/g, ""),
 				referenceNumber: formData.reference.trim(),
 				notes: formData.notes.trim(),
+				transactionDate: formData.transactionDate,
 			});
 
 			setTimeout(() => {
@@ -292,6 +317,95 @@ const AddTransactionModal = ({
 								</div>
 							</div>
 
+							{/* Transaction Date & Time - Now required */}
+							<div>
+								<label className="block text-sm font-semibold text-gray-700 mb-2">
+									Transaction Date & Time *
+								</label>
+								<div className="grid grid-cols-2 gap-3">
+									<div className="relative">
+										<Calendar className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+										<input
+											type="date"
+											value={formData.transactionDate.split("T")[0] || ""}
+											onChange={(e) => {
+												const currentTime =
+													formData.transactionDate.split("T")[1] || "00:00";
+												const newDate = e.target.value;
+												if (newDate) {
+													handleInputChange(
+														"transactionDate",
+														`${newDate}T${currentTime}`
+													);
+												} else {
+													handleInputChange("transactionDate", "");
+												}
+											}}
+											className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors ${
+												errors.transactionDate
+													? "border-red-300 bg-red-50"
+													: "border-gray-300"
+											}`}
+											max={getCurrentDate()}
+											required
+										/>
+									</div>
+									<div className="relative">
+										<div className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2">
+											<svg
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												strokeWidth="2"
+												className="w-5 h-5"
+											>
+												<circle cx="12" cy="12" r="10" />
+												<polyline points="12,6 12,12 16,14" />
+											</svg>
+										</div>
+										<input
+											type="time"
+											value={formData.transactionDate.split("T")[1] || ""}
+											onChange={(e) => {
+												const currentDate =
+													formData.transactionDate.split("T")[0] ||
+													getCurrentDate();
+												const newTime = e.target.value;
+												if (newTime) {
+													handleInputChange(
+														"transactionDate",
+														`${currentDate}T${newTime}`
+													);
+												} else if (currentDate) {
+													handleInputChange(
+														"transactionDate",
+														`${currentDate}T00:00`
+													);
+												}
+											}}
+											className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors ${
+												errors.transactionDate
+													? "border-red-300 bg-red-50"
+													: "border-gray-300"
+											}`}
+											required
+										/>
+									</div>
+								</div>
+								{errors.transactionDate && (
+									<div className="flex items-center gap-1 mt-1 text-red-600 text-xs">
+										<AlertCircle className="w-3 h-3" />
+										{errors.transactionDate}
+									</div>
+								)}
+								{!formData.transactionDate && (
+									<div className="flex items-center gap-1 mt-1 text-amber-600 text-xs">
+										<AlertTriangle className="w-3 h-3" />
+										Please select both date and time for this transaction
+									</div>
+								)}
+							</div>
+
 							{/* Amount */}
 							<div>
 								<label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -327,10 +441,11 @@ const AddTransactionModal = ({
 								)}
 							</div>
 
-							{/* Customer Name */}
+							{/* Customer Name - Now Optional */}
 							<div>
 								<label className="block text-sm font-semibold text-gray-700 mb-2">
-									Customer Name
+									Customer Name{" "}
+									<span className="font-normal text-gray-500">(Optional)</span>
 								</label>
 								<div className="relative">
 									<User className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -345,7 +460,7 @@ const AddTransactionModal = ({
 												? "border-red-300 bg-red-50"
 												: "border-gray-300"
 										}`}
-										placeholder="Enter customer's full name"
+										placeholder="Enter customer's full name (optional)"
 										maxLength={100}
 									/>
 								</div>
