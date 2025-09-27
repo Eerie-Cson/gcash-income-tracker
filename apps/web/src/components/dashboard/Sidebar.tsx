@@ -1,19 +1,19 @@
 "use client";
-import React from "react";
+import { NavItem, NavItemId } from "@/utils/types";
+import { WallterType } from "@/utils/types/wallet";
 import {
-	User,
-	Settings,
-	LogOut,
 	ChevronLeft,
 	ChevronRight,
 	Copy,
+	LogOut,
+	Settings,
 	TrendingDown,
 	TrendingUp,
+	User,
 	Wallet,
 } from "lucide-react";
-import { WallterType } from "@/utils/types/wallet";
 import { useRouter } from "next/navigation";
-import { NavItem, NavItemId } from "@/utils/types";
+import React from "react";
 
 interface SidebarProps {
 	nav: NavItem[];

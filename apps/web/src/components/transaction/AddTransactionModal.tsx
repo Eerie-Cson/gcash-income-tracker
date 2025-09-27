@@ -17,6 +17,7 @@ import {
 	Calendar,
 } from "lucide-react";
 import { TransactionType } from "@/utils/types";
+import { useWalletBalances } from "@/hooks/useWalletBalance";
 
 interface FormData {
 	type: typeof TransactionType.CASH_IN | typeof TransactionType.CASH_OUT;
@@ -35,11 +36,6 @@ interface ValidationErrors {
 	reference?: string;
 	transactionDate?: string;
 }
-
-const MOCK_BALANCES = {
-	gcash: 25450.75,
-	cash: 18230.5,
-};
 
 const formatCurrency = (amount: number) => {
 	return new Intl.NumberFormat("en-PH", {
@@ -68,6 +64,7 @@ const AddTransactionModal = ({
 	}) => {},
 	isCreating = false,
 }) => {
+	const { balances } = useWalletBalances();
 	const [formData, setFormData] = useState<FormData>({
 		type: TransactionType.CASH_IN,
 		amount: "",
@@ -248,7 +245,7 @@ const AddTransactionModal = ({
 									</span>
 								</div>
 								<p className="text-lg font-bold text-blue-700">
-									{formatCurrency(MOCK_BALANCES.gcash)}
+									{formatCurrency(balances.gcash)}
 								</p>
 							</div>
 							<div className="bg-white/70 backdrop-blur-sm rounded-xl p-3 border border-green-200/50">
@@ -261,7 +258,7 @@ const AddTransactionModal = ({
 									</span>
 								</div>
 								<p className="text-lg font-bold text-green-700">
-									{formatCurrency(MOCK_BALANCES.cash)}
+									{formatCurrency(balances.cash)}
 								</p>
 							</div>
 						</div>
