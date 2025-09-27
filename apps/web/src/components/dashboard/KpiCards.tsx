@@ -8,6 +8,7 @@ import {
 	TrendingDown,
 	BanknoteArrowUp,
 } from "lucide-react";
+import { useTransactionsApi } from "@/hooks/useTransactionsApi";
 
 interface KpiCardsProps {
 	balances: any;
@@ -17,6 +18,28 @@ interface KpiCardsProps {
 	accentClass?: string;
 }
 
+export function timeAgo(date?: Date | string): string {
+	if (!date) return "No transactions yet";
+	const now = new Date();
+
+	const past = typeof date === "string" ? new Date(date) : date;
+
+	const pstNow = new Date();
+	const pstPast = past;
+
+	const diffMs = pstNow.getTime() - pstPast.getTime();
+	const diffSec = Math.floor(diffMs / 1000);
+	const diffMin = Math.floor(diffSec / 60);
+	const diffHours = Math.floor(diffMin / 60);
+	const diffDays = Math.floor(diffHours / 24);
+
+	if (diffSec < 60) return "just now";
+	if (diffMin < 60) return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
+	if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+	if (diffDays === 1) return "yesterday";
+	return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+}
+
 const KpiCards = ({
 	balances,
 	totalProfit,
@@ -24,6 +47,12 @@ const KpiCards = ({
 	accentClass,
 }: KpiCardsProps) => {
 	// Calculate profit trend (you'd implement this based on historical data)
+	const { transactions } = useTransactionsApi();
+
+	const lastUpdated =
+		transactions.length > 0 && transactions[0].transactionDate
+			? transactions[0].transactionDate
+			: undefined;
 	const profitTrend = totalProfit >= 0 ? "up" : "down";
 	const profitPercentage = 5.2; // This should be calculated from actual data
 
@@ -137,7 +166,9 @@ const KpiCards = ({
 								</div>
 							) : null}
 
-							<div className="text-xs text-slate-400">Updated now</div>
+							<div className="text-xs text-slate-400">
+								Updated {timeAgo(lastUpdated)}
+							</div>
 						</div>
 					</div>
 				);
