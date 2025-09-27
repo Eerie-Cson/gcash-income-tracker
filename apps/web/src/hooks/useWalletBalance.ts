@@ -1,6 +1,6 @@
 import { getWalletBalances } from "@/api/wallet";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type Balances = { cash: number; gcash: number };
 
@@ -10,28 +10,50 @@ export function useWalletBalances() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<Error | null>(null);
 
-	useEffect(() => {
+	const fetchBalances = useCallback(async () => {
 		if (!token) return;
 
-		async function fetchBalances() {
-			try {
-				setLoading(true);
+		try {
+			setLoading(true);
+			setError(null);
 
-				const wallet = await getWalletBalances();
+			const wallet = await getWalletBalances();
 
-				setBalances({
-					cash: Number(wallet.cashBalance),
-					gcash: Number(wallet.gcashBalance),
-				});
-			} catch (err: any) {
-				setError(err);
-			} finally {
-				setLoading(false);
-			}
+			setBalances({
+				cash: Number(wallet.cashBalance),
+				gcash: Number(wallet.gcashBalance),
+			});
+		} catch (err: any) {
+			setError(err instanceof Error ? err : new Error(String(err)));
+		} finally {
+			setLoading(false);
 		}
-
-		fetchBalances();
 	}, [token]);
 
-	return { balances, loading, error };
+	useEffect(() => {
+		fetchBalances();
+	}, [fetchBalances]);
+
+	useEffect(() => {
+		const handleRefreshEvent = () => {
+			fetchBalances();
+		};
+
+		window.addEventListener("balancesShouldRefresh", handleRefreshEvent);
+
+		return () => {
+			window.removeEventListener("balancesShouldRefresh", handleRefreshEvent);
+		};
+	}, [fetchBalances]);
+
+	const refetch = useCallback(() => {
+		return fetchBalances();
+	}, [fetchBalances]);
+
+	return {
+		balances,
+		loading,
+		error,
+		refetch,
+	};
 }

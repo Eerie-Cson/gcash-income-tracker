@@ -149,22 +149,22 @@ export default function Sidebar({
 						</div>
 
 						<div className="border-t border-slate-100 px-5 py-4 bg-slate-50/50">
-							<div className="flex items-center justify-between mb-2">
-								<div className="flex items-center gap-2">
-									<div className="w-2 h-2 rounded-full bg-blue-500" />
-									<span className="text-sm text-slate-600">Cash</span>
-								</div>
-								<span className="text-sm font-medium text-slate-900">
-									₱{(balances?.cash || 0).toLocaleString()}
-								</span>
-							</div>
 							<div className="flex items-center justify-between">
 								<div className="flex items-center gap-2">
-									<div className="w-2 h-2 rounded-full bg-emerald-500" />
+									<div className="w-2 h-2 rounded-full bg-blue-500" />
 									<span className="text-sm text-slate-600">GCash</span>
 								</div>
 								<span className="text-sm font-medium text-slate-900">
 									₱{(balances?.gcash || 0).toLocaleString()}
+								</span>
+							</div>
+							<div className="flex items-center justify-between mb-2">
+								<div className="flex items-center gap-2">
+									<div className="w-2 h-2 rounded-full bg-emerald-500" />
+									<span className="text-sm text-slate-600">Cash</span>
+								</div>
+								<span className="text-sm font-medium text-slate-900">
+									₱{(balances?.cash || 0).toLocaleString()}
 								</span>
 							</div>
 						</div>

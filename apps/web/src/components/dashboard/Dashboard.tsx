@@ -2,12 +2,11 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardUI } from "@/contexts/DashboardUIContext";
-import { useAddTransaction } from "@/hooks/useAddTransaction";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useTransactionsApi } from "@/hooks/useTransactionsApi";
 import { accentMap, borderMap, fontMap } from "@/utils/types";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import AddTransactionModal from "../transaction/AddTransactionModal";
 import DashboardHeader from "./Header";
 import KpiCards from "./KpiCards";
@@ -17,10 +16,13 @@ import TransactionsTable from "./TransactionsTable";
 
 export default function Dashboard() {
 	const { account } = useAuth();
-	const { balances, totalBalance } = useDashboardData();
+	const { balances, totalBalance, refetchBalances } = useDashboardData();
 	const { creating, createTransaction, transactions } = useTransactionsApi();
 	const dashboardStats = useDashboardStats(transactions);
-	const { isOpen, openModal, closeModal } = useAddTransaction();
+	const [isOpen, setIsOpen] = useState(false);
+
+	const openModal = useCallback(() => setIsOpen(true), []);
+	const closeModal = useCallback(() => setIsOpen(false), []);
 
 	const { fontSize, compact, accent, setActive } = useDashboardUI();
 
@@ -40,11 +42,9 @@ export default function Dashboard() {
 	const handleSubmit = async (data: any) => {
 		try {
 			await createTransaction(data);
+			await refetchBalances();
 			closeModal();
-			// Do something specific to this component
-		} catch (error) {
-			// Handle error specifically for this component
-		}
+		} catch (error) {}
 	};
 
 	const handleExport = () => {
