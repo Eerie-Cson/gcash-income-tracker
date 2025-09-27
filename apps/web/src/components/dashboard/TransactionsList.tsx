@@ -27,13 +27,13 @@ export default function TransactionsList({
 								className={`w-12 h-12 rounded-xl flex items-center justify-center border ${
 									isIn
 										? "bg-emerald-50 border-emerald-100"
-										: "bg-rose-50 border-rose-100"
+										: "bg-blue-50 border-blue-100"
 								}`}
 							>
 								{isIn ? (
 									<ArrowDownCircle className="w-6 h-6 text-emerald-600" />
 								) : (
-									<ArrowUpCircle className="w-6 h-6 text-rose-600" />
+									<ArrowUpCircle className="w-6 h-6 text-blue-600" />
 								)}
 							</div>
 

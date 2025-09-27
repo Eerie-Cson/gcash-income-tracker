@@ -1,4 +1,3 @@
-// hooks/useTransactionsApi
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getTransactions, transferTransaction } from "@/api/transaction";
@@ -43,6 +42,13 @@ export function useTransactionsApi() {
 	const [loading, setLoading] = useState(true);
 	const [creating, setCreating] = useState(false);
 	const [error, setError] = useState<Error | null>(null);
+
+	const refreshBalances = useCallback(async () => {
+		// This will trigger a refresh in components using wallet balances
+		// You might need to implement a proper cache invalidation strategy
+		// For now, we'll dispatch a custom event that balance consumers can listen to
+		window.dispatchEvent(new CustomEvent("balancesShouldRefresh"));
+	}, []);
 
 	const fetchPaginatedTransactions = useCallback(
 		async (
@@ -114,9 +120,8 @@ export function useTransactionsApi() {
 					customerPhone: payload.customerPhone,
 				});
 
-				// Refetch the first page to show the new transaction
 				await fetchPaginatedTransactions({ page: 1 });
-
+				await refreshBalances();
 				return true;
 			} catch (err: any) {
 				setError(err instanceof Error ? err : new Error(String(err)));
@@ -125,7 +130,7 @@ export function useTransactionsApi() {
 				setCreating(false);
 			}
 		},
-		[token, fetchPaginatedTransactions]
+		[token, fetchPaginatedTransactions, refreshBalances]
 	);
 
 	return {

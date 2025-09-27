@@ -29,22 +29,22 @@ const KpiCards = ({
 
 	const cards = [
 		{
+			title: "GCash",
+			value: `₱${balances.gcash.toLocaleString()}`,
+			subtitle: "Digital wallet",
+			iconColor: "text-blue-600",
+			icon: CreditCard,
+			sparkData: [8, 10, 9, 12, 14],
+			useAccent: false,
+			bgColor: `bg-blue-100`,
+		},
+		{
 			title: "Cash",
 			value: `₱${balances.cash.toLocaleString()}`,
 			subtitle: "Physical cash on hand",
 			icon: Wallet,
 			sparkData: [1000, 120, 580, 150, 1100],
-			iconColor: "text-indigo-600",
-			useAccent: false,
-			bgColor: `bg-indigo-100`,
-		},
-		{
-			title: "GCash",
-			value: `₱${balances.gcash.toLocaleString()}`,
-			subtitle: "Digital wallet",
 			iconColor: "text-green-600",
-			icon: BanknoteArrowUp,
-			sparkData: [8, 10, 9, 12, 14],
 			useAccent: false,
 			bgColor: `bg-green-100`,
 		},
@@ -107,7 +107,7 @@ const KpiCards = ({
 											: "text-rose-700"
 										: card.useAccent
 										? accentClass
-										: "text-slate-800"
+										: card.iconColor
 								}`}
 							>
 								{card.value}

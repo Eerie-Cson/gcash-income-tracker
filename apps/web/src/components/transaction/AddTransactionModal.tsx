@@ -9,13 +9,10 @@ import {
 	ArrowUpCircle,
 	ArrowDownCircle,
 	AlertCircle,
-	CheckCircle2,
 	Loader2,
 	CreditCard,
 	Shield,
-	TrendingUp,
 	Wallet,
-	XCircle,
 	AlertTriangle,
 	Calendar,
 } from "lucide-react";
@@ -78,7 +75,7 @@ const AddTransactionModal = ({
 		customerPhone: "",
 		reference: "",
 		notes: "",
-		transactionDate: "", // Empty by default - user must set it
+		transactionDate: "",
 	});
 
 	const [errors, setErrors] = useState<ValidationErrors>({});
@@ -111,7 +108,6 @@ const AddTransactionModal = ({
 			newErrors.amount = "Amount cannot exceed ₱1,000,000";
 		}
 
-		// Customer name is now optional, but if provided, must be at least 2 characters
 		if (
 			formData.customerName.trim() &&
 			formData.customerName.trim().length < 2

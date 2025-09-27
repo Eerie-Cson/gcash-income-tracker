@@ -17,7 +17,6 @@ import { useTransactionsApi } from "@/hooks/useTransactionsApi";
 import { NotificationType, TransactionType } from "@/utils/types";
 import AddTransactionModal from "./AddTransactionModal";
 import Notification from "../../ui/Notification";
-import { useAddTransaction } from "@/hooks/useAddTransaction";
 import { useNotification } from "@/hooks/useNotification";
 import Link from "next/link";
 
@@ -31,7 +30,10 @@ const TransactionsSection: React.FC = () => {
 		refetch,
 	} = useTransactionsApi();
 
-	const { isOpen, openModal, closeModal } = useAddTransaction();
+	const [isOpen, setIsOpen] = useState(false);
+
+	const openModal = useCallback(() => setIsOpen(true), []);
+	const closeModal = useCallback(() => setIsOpen(false), []);
 	const { notification, showNotification, hideNotification } =
 		useNotification();
 
@@ -41,37 +43,6 @@ const TransactionsSection: React.FC = () => {
 	const [itemsPerPage] = useState(10);
 	const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState<any>(null);
-
-	// const allTransactions = transactions ?? [];
-
-	// const filteredTransactions = useMemo(() => {
-	// 	const q = searchTerm.trim().toLowerCase();
-	// 	return allTransactions.filter((transaction) => {
-	// 		const matchesSearch =
-	// 			!q ||
-	// 			(transaction.customerName &&
-	// 				transaction.customerName.toLowerCase().includes(q)) ||
-	// 			(transaction.referenceNumber &&
-	// 				transaction.referenceNumber.toLowerCase().includes(q)) ||
-	// 			(transaction.customerPhone &&
-	// 				transaction.customerPhone.includes(searchTerm));
-
-	// 		const matchesType =
-	// 			filterType === "all" || transaction.transactionType === filterType;
-
-	// 		return matchesSearch && matchesType;
-	// 	});
-	// }, [allTransactions, searchTerm, filterType]);
-
-	// const totalPages = Math.max(
-	// 	1,
-	// 	Math.ceil(filteredTransactions.length / itemsPerPage)
-	// );
-	// const startIndex = (currentPage - 1) * itemsPerPage;
-	// const paginatedTransactions = useMemo(
-	// 	() => filteredTransactions.slice(startIndex, startIndex + itemsPerPage),
-	// 	[filteredTransactions, startIndex, itemsPerPage]
-	// );
 
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
