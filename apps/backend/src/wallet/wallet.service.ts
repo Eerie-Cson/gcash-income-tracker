@@ -89,9 +89,14 @@ export class WalletService {
   }
 
   async getBalance(accountId: string, type: WalletType) {
-    const wallet = await this.findWallet(accountId, type);
+    let wallet = await this.findWallet(accountId, type);
+
     if (!wallet) {
-      throw new NotFoundException('Wallet not found');
+      wallet = await this.createWallet({
+        balance: 0,
+        accountId,
+        type,
+      });
     }
     return wallet.balance;
   }
@@ -103,10 +108,10 @@ export class WalletService {
   }
 
   async updateCashBalance(accountId: string, balance: number) {
-    const cashWallet = await this.findWallet(accountId, WalletType.CASH);
+    let cashWallet = await this.findWallet(accountId, WalletType.CASH);
 
     if (!cashWallet) {
-      throw new NotFoundException('Cash wallet not found');
+      cashWallet = await this.createCashWallet(0, accountId);
     }
 
     return this.walletRepository.update(
@@ -116,9 +121,9 @@ export class WalletService {
   }
 
   async updateGcashBalance(accountId: string, balance: number) {
-    const getGcashWallet = await this.findWallet(accountId, WalletType.GCASH);
+    let getGcashWallet = await this.findWallet(accountId, WalletType.GCASH);
     if (!getGcashWallet) {
-      throw new NotFoundException('Cash wallet not found');
+      getGcashWallet = await this.createGcashWallet(0, accountId);
     }
 
     return this.walletRepository.update(

@@ -8,7 +8,6 @@ import { AccountService } from 'src/account/account.service';
 import { WalletService } from 'src/wallet/wallet.service';
 import {
   CreateTransactionRequest,
-  Transaction,
   TransactionType,
   WalletType,
 } from '../libs/types';
