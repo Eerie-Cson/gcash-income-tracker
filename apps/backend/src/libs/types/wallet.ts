@@ -17,3 +17,5 @@ export type CreateWalletRequest = Omit<
   Partial<Wallet>,
   'createdAt' | 'updatedAt' | 'id' | 'accountId' | 'type'
 >;
+
+export type UpdateWalletRequest = Pick<Wallet, 'balance' | 'type'>;
