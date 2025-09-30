@@ -35,3 +35,23 @@ export async function getWalletBalances() {
 	});
 	return res.data;
 }
+
+export async function manualWalletAdjustment(payload: {
+	amount: number;
+	walletType: string;
+}) {
+	const res = await api.post(
+		"/wallets/adjustment",
+		{
+			balance: payload.amount,
+			type: payload.walletType,
+		},
+		{
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+		}
+	);
+	return res.data;
+}

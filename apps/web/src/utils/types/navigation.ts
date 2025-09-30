@@ -1,10 +1,10 @@
-export type NavItemId = "dashboard" | "transactions" | "report" | "guide";
+export type NavItemId = NavigationType;
 
 export enum NavigationType {
 	Dashboard = "dashboard",
 	Transactions = "transactions",
 	Report = "report",
-	Guide = "guide",
+	Configurations = "configurations",
 }
 export interface NavItem {
 	id: NavItemId;

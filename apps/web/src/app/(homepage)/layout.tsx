@@ -8,7 +8,7 @@ import { nav } from "@/const/NavigationList";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useTransactionsApi } from "@/hooks/useTransactionsApi";
-import { fontMap } from "@/utils/types";
+import { fontMap, NavigationType } from "@/utils/types";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useMemo } from "react";
 import {
@@ -51,11 +51,14 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 	const pathname = usePathname();
 	useEffect(() => {
 		if (!pathname) return;
-		if (pathname.startsWith("/transactions")) setActive("transactions");
+		if (pathname.startsWith("/transactions"))
+			setActive(NavigationType.Transactions);
 		else if (pathname === "/dashboard" || pathname === "/dashboard/")
-			setActive("dashboard");
-		else if (pathname.startsWith("/dashboard/report")) setActive("report");
-		else if (pathname.startsWith("/dashboard/guide")) setActive("guide");
+			setActive(NavigationType.Dashboard);
+		else if (pathname.startsWith("/dashboard/report"))
+			setActive(NavigationType.Report);
+		else if (pathname.startsWith("/configurations"))
+			setActive(NavigationType.Configurations);
 	}, [pathname, setActive]);
 
 	return (

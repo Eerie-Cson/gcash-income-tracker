@@ -1,7 +1,7 @@
 import { camelCase, snakeCase } from 'change-case';
 import { Pool, PoolClient } from 'pg';
 import { Table } from './const/tables';
-import { Repository, QueryOptions, PaginationResult } from './type';
+import { PaginationResult, QueryOptions, Repository } from './type';
 
 export abstract class PgRepository<T> implements Repository<T> {
   constructor(
@@ -31,7 +31,10 @@ export abstract class PgRepository<T> implements Repository<T> {
     ) as T;
   }
 
-  private buildWhereClause(filter?: Partial<Record<keyof T, any>>): {
+  private buildWhereClause(
+    filter?: Partial<Record<keyof T, any>>,
+    startIndex: number = 1,
+  ): {
     clause: string;
     values: any[];
   } {
@@ -46,7 +49,7 @@ export abstract class PgRepository<T> implements Repository<T> {
       if (value === undefined || value === null) return;
 
       const columnName = snakeCase(key as string);
-      conditions.push(`${columnName} = $${index + 1}`);
+      conditions.push(`${columnName} = $${startIndex + index}`);
       values.push(value);
     });
 
@@ -159,23 +162,22 @@ export abstract class PgRepository<T> implements Repository<T> {
     return result.rows[0] ? this.deserializeData(result.rows[0]) : null;
   }
 
-  async delete(filter: Partial<Record<keyof T, any>>): Promise<boolean> {
-    const { clause, values } = this.buildWhereClause(filter);
+  async delete(
+    params: { filter: Partial<Record<keyof T, any>> },
+    client?: PoolClient,
+  ): Promise<boolean> {
+    const { clause, values } = this.buildWhereClause(params.filter);
+    const pgClient = client || this.pool;
 
-    if (!clause) {
-      throw new Error('Delete operation requires a filter');
-    }
-
-    const result = await this.pool.query(
+    const result = await pgClient.query(
       `DELETE FROM ${this.table} ${clause}`,
       values,
     );
     return result.rowCount > 0;
   }
 
-  async create(params: {
-    data: Partial<T> & { createdAt: Date; updatedAt: Date };
-  }): Promise<T> {
+  async create(params: { data: Partial<T> }, client?: PoolClient): Promise<T> {
+    const pgClient = client || this.pool;
     const serializedData = this.serializeData(params.data);
     const columns = Object.keys(serializedData);
     const values = columns.map((key) => serializedData[key]);
@@ -184,7 +186,7 @@ export abstract class PgRepository<T> implements Repository<T> {
     const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
 
     const query = `INSERT INTO ${this.table} (${fields}) VALUES (${placeholders}) RETURNING *`;
-    const result = await this.pool.query(query, values);
+    const result = await pgClient.query(query, values);
 
     return this.deserializeData(result.rows[0]);
   }
@@ -194,8 +196,11 @@ export abstract class PgRepository<T> implements Repository<T> {
     data: Partial<T>,
   ): Promise<T | null> {
     const serializedData = this.serializeData(data);
-    const { clause: whereClause, values: whereValues } =
-      this.buildWhereClause(filter);
+
+    const { clause: whereClause, values: whereValues } = this.buildWhereClause(
+      filter,
+      Object.keys(serializedData).length + 1,
+    );
 
     if (!whereClause) {
       throw new Error('Update operation requires a filter');

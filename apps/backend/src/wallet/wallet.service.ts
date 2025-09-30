@@ -89,9 +89,14 @@ export class WalletService {
   }
 
   async getBalance(accountId: string, type: WalletType) {
-    const wallet = await this.findWallet(accountId, type);
+    let wallet = await this.findWallet(accountId, type);
+
     if (!wallet) {
-      throw new NotFoundException('Wallet not found');
+      wallet = await this.createWallet({
+        balance: 0,
+        accountId,
+        type,
+      });
     }
     return wallet.balance;
   }
@@ -100,5 +105,30 @@ export class WalletService {
     const gcashBalance = await this.getBalance(accountId, WalletType.GCASH);
     const cashBalance = await this.getBalance(accountId, WalletType.CASH);
     return { gcashBalance, cashBalance };
+  }
+
+  async updateCashBalance(accountId: string, balance: number) {
+    let cashWallet = await this.findWallet(accountId, WalletType.CASH);
+
+    if (!cashWallet) {
+      cashWallet = await this.createCashWallet(0, accountId);
+    }
+
+    return this.walletRepository.update(
+      { accountId, type: WalletType.CASH, id: cashWallet.id },
+      { balance },
+    );
+  }
+
+  async updateGcashBalance(accountId: string, balance: number) {
+    let getGcashWallet = await this.findWallet(accountId, WalletType.GCASH);
+    if (!getGcashWallet) {
+      getGcashWallet = await this.createGcashWallet(0, accountId);
+    }
+
+    return this.walletRepository.update(
+      { accountId, type: getGcashWallet.type, id: getGcashWallet.id },
+      { balance },
+    );
   }
 }

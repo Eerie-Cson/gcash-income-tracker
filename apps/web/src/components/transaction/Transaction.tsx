@@ -86,7 +86,6 @@ const TransactionsSection: React.FC = () => {
 		async (data: any) => {
 			try {
 				await createTransaction(data);
-				console.log("formData: ", data);
 
 				const title = "Transaction Created Successfully!";
 				const message = `${data.transactionType} transaction for ${data.customerName} has been added successfully.`;
