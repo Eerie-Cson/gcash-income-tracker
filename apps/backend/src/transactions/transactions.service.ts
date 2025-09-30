@@ -11,6 +11,7 @@ import {
   TransactionType,
   WalletType,
 } from '../libs/types';
+import { ProfitService } from '../profit/profit.service';
 import { Token as TranasctionToken } from './repository/token';
 import { TransactionRepository } from './repository/transaction.repository';
 
@@ -21,6 +22,7 @@ export class TransactionsService {
     private readonly transactionsRepository: TransactionRepository,
     private walletService: WalletService,
     private accountService: AccountService,
+    private profitService: ProfitService,
   ) {}
 
   generateTransactionCode(date: number): string {
@@ -55,15 +57,13 @@ export class TransactionsService {
   }) {
     const { id, options } = params;
 
-    // Build the base filter
     const baseFilter: any = { accountId: id };
 
     if (options.filterType) {
       baseFilter.transactionType = options.filterType;
     }
 
-    // Prepare repository options
-    const repoOptions: any = {
+    const optionsFilter: any = {
       pagination: {
         page: options.page,
         limit: options.pageSize,
@@ -71,16 +71,15 @@ export class TransactionsService {
     };
 
     if (options.orderBy) {
-      repoOptions.orderBy = {
+      optionsFilter.orderBy = {
         column: options.orderBy as any,
         direction: options.orderDirection || 'DESC',
       };
     }
 
-    // Use the enhanced repository with search support
     return this.transactionsRepository.paginate(
       baseFilter,
-      repoOptions,
+      optionsFilter,
       options.searchTerm
         ? {
             term: options.searchTerm,
@@ -106,6 +105,11 @@ export class TransactionsService {
     params.transactionDate = new Date(params.transactionDate);
 
     return this.transactionsRepository.executeTransactions(async (client) => {
+      const profit = await this.profitService.calculateTransactionProfit(
+        params.accountId,
+        params.amount,
+      );
+
       const fromWallet = await this.walletService.findWalletForUpdate(
         client,
         params.accountId,
@@ -128,8 +132,17 @@ export class TransactionsService {
         );
       }
 
-      const newFromBalance = Number(fromWallet.balance) - params.amount;
-      const newToBalance = Number(toWallet.balance) + params.amount;
+      let newFromBalance = Number(fromWallet.balance) - params.amount + profit;
+      let newToBalance = Number(toWallet.balance) + params.amount;
+
+      if (
+        params.transactionType === TransactionType.CASH_IN ||
+        (params.transactionType === TransactionType.CASH_OUT &&
+          !params.separateFee)
+      ) {
+        newFromBalance = Number(fromWallet.balance) - params.amount;
+        newToBalance = Number(toWallet.balance) + params.amount + profit;
+      }
 
       await this.walletService.updateBalance(
         client,
@@ -151,6 +164,7 @@ export class TransactionsService {
         accountId: params.accountId,
         customerName: params.customerName,
         customerPhone: params.customerPhone,
+        profit,
       };
       await this.transactionsRepository.createTransaction(
         client,
@@ -195,6 +209,7 @@ export class TransactionsService {
     referenceNumber?: string;
     transactionDate: Date;
     accountId: string;
+    separateFee: boolean;
   }) {
     const account = await this.accountService.findById(params.accountId);
     if (!account) {

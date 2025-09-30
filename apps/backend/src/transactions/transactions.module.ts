@@ -5,9 +5,10 @@ import { Token as TransactionToken } from './repository/token';
 import { TransactionRepository } from './repository/transaction.repository';
 import { TransactionsController } from './transactions.controller';
 import { TransactionsService } from './transactions.service';
+import { ProfitModule } from '../profit/profit.module';
 
 @Module({
-  imports: [AccountModule, WalletModule],
+  imports: [AccountModule, WalletModule, ProfitModule],
   controllers: [TransactionsController],
   providers: [
     {

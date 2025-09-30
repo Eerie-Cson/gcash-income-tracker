@@ -1,10 +1,11 @@
-import { useEffect, useState, useCallback } from "react";
-import { useAuth } from "@/contexts/AuthContext";
 import { getTransactions, transferTransaction } from "@/api/transaction";
+import { useAuth } from "@/contexts/AuthContext";
 import { Transaction, TransactionType } from "@/utils/types";
+import { useCallback, useEffect, useState } from "react";
 
 type CreatePayload = {
 	transactionType: TransactionType.CASH_IN | TransactionType.CASH_OUT;
+	separateFee?: boolean;
 	amount: number;
 	customerName?: string;
 	customerPhone?: string;
@@ -44,9 +45,8 @@ export function useTransactionsApi() {
 	const [error, setError] = useState<Error | null>(null);
 
 	const refreshBalances = useCallback(async () => {
-		// This will trigger a refresh in components using wallet balances
-		// You might need to implement a proper cache invalidation strategy
-		// For now, we'll dispatch a custom event that balance consumers can listen to
+		// Might need to implement a proper cache invalidation strategy
+
 		window.dispatchEvent(new CustomEvent("balancesShouldRefresh"));
 	}, []);
 
@@ -110,6 +110,7 @@ export function useTransactionsApi() {
 
 			try {
 				await transferTransaction({
+					...(payload.separateFee ? { separateFee: payload.separateFee } : {}),
 					transactionType: payload.transactionType,
 					amount: payload.amount,
 					description: payload.notes,
