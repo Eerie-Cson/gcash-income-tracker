@@ -6,6 +6,7 @@ export type Transaction = Node & {
   transactionType: TransactionType;
   referenceNumber?: string;
   transactionDate: Date;
+  profit: number;
   transactionCode: string;
   customerName?: string;
   customerPhone?: string;
@@ -26,4 +27,14 @@ export type CreateTransactionRequest = Omit<
   | 'createdBy'
   | 'updatedBy'
   | 'transactionCode'
->;
+  | 'profit'
+> &
+  (
+    | {
+        transactionType: TransactionType.CASH_IN;
+      }
+    | {
+        transactionType: TransactionType.CASH_OUT;
+        separateFee: boolean;
+      }
+  );
