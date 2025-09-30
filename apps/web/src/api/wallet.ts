@@ -53,6 +53,5 @@ export async function manualWalletAdjustment(payload: {
 			},
 		}
 	);
-	console.log(payload, res.data);
 	return res.data;
 }

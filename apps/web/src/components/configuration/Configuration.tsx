@@ -25,7 +25,7 @@ interface FeeStructure {
 	id: string;
 	minAmount: number;
 	maxAmount: number;
-	profit: number;
+	fee: number;
 }
 
 interface ConfigurationProps {
@@ -41,8 +41,6 @@ export default function Configuration({
 	onSave,
 	initialData,
 }: ConfigurationProps) {
-	const { fontSize, accent } = useDashboardUI();
-
 	useEffect(() => {
 		if (initialData) {
 			setCashBalance(initialData.cashBalance);
@@ -61,8 +59,8 @@ export default function Configuration({
 
 	const [feeStructures, setFeeStructures] = useState<FeeStructure[]>(
 		initialData?.feeStructures || [
-			{ id: "1", minAmount: 1, maxAmount: 100, profit: 5 },
-			{ id: "2", minAmount: 101, maxAmount: 500, profit: 10 },
+			{ id: "1", minAmount: 1, maxAmount: 100, fee: 5 },
+			{ id: "2", minAmount: 101, maxAmount: 500, fee: 10 },
 		]
 	);
 	const [isModified, setIsModified] = useState(false);
@@ -89,7 +87,7 @@ export default function Configuration({
 
 	const hasEmptyRanges = useMemo(() => {
 		return feeStructures.some(
-			(s) => s.minAmount >= s.maxAmount || s.minAmount < 0 || s.profit < 0
+			(s) => s.minAmount >= s.maxAmount || s.minAmount < 0 || s.fee < 0
 		);
 	}, [feeStructures]);
 
@@ -123,7 +121,7 @@ export default function Configuration({
 			id: Date.now().toString(),
 			minAmount: newMinAmount,
 			maxAmount: newMinAmount + 99,
-			profit: 5,
+			fee: 5,
 		};
 		setFeeStructures((prev) => [...prev, newStructure]);
 		setIsModified(true);
@@ -425,7 +423,7 @@ export default function Configuration({
 								</p>
 								<button
 									onClick={addFeeStructure}
-									className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
+									className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-medium transition-colors"
 								>
 									<Plus className="w-4 h-4" />
 									Create Fee Tier
@@ -443,7 +441,7 @@ export default function Configuration({
 												Max Amount
 											</th>
 											<th className="text-left px-4 py-3 text-sm font-medium text-slate-700">
-												Profit
+												Transaction Fee
 											</th>
 											<th className="text-left px-4 py-3 text-sm font-medium text-slate-700">
 												Range
@@ -462,7 +460,7 @@ export default function Configuration({
 												const isInvalid =
 													structure.minAmount >= structure.maxAmount ||
 													structure.minAmount < 0 ||
-													structure.profit < 0;
+													structure.fee < 0;
 
 												return (
 													<tr
@@ -520,11 +518,11 @@ export default function Configuration({
 																</span>
 																<input
 																	type="number"
-																	value={structure.profit}
+																	value={structure.fee}
 																	onChange={(e) =>
 																		updateFeeStructure(
 																			structure.id,
-																			"profit",
+																			"fee",
 																			Number(e.target.value)
 																		)
 																	}
@@ -540,17 +538,17 @@ export default function Configuration({
 															</span>
 														</td>
 														<td className="px-4 py-3">
-															{feeStructures.length > 1 && (
-																<button
-																	onClick={() =>
-																		setShowDeleteConfirm(structure.id)
-																	}
-																	className="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50"
-																	title="Delete fee tier"
-																>
-																	<Trash2 className="w-4 h-4" />
-																</button>
-															)}
+															{/* {feeStructures.length > 1 && ( */}
+															<button
+																onClick={() =>
+																	setShowDeleteConfirm(structure.id)
+																}
+																className="p-1.5 text-slate-400 hover:text-red-600 rounded-lg hover:bg-red-50"
+																title="Delete fee tier"
+															>
+																<Trash2 className="w-4 h-4" />
+															</button>
+															{/* )} */}
 														</td>
 													</tr>
 												);
@@ -579,7 +577,7 @@ export default function Configuration({
 													{structure.maxAmount.toLocaleString()}
 												</span>
 												<span className="font-semibold text-emerald-600">
-													₱{structure.profit} profit
+													₱{structure.fee} profit
 												</span>
 											</div>
 										))}

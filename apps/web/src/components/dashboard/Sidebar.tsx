@@ -177,7 +177,7 @@ export default function Sidebar({
 				<div className="mt-auto pt-4 grid gap-2">
 					<div className={`${collapsed ? "flex justify-center" : ""}`}>
 						<button
-							className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-emerald-700 border border-slate-200 bg-emerald-50 hover:bg-slate-50 ${
+							className={`cursor-pointer w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-emerald-700 border border-slate-200 bg-emerald-50 hover:bg-slate-50 ${
 								collapsed ? "w-10 h-10 p-0" : ""
 							}`}
 							title="Profile"
@@ -189,7 +189,7 @@ export default function Sidebar({
 
 					<button
 						onClick={() => setSettingsOpen(true)}
-						className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 ${
+						className={`cursor-pointer w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 ${
 							collapsed ? "w-10 h-10 p-0" : ""
 						}`}
 						title="Settings"
@@ -200,7 +200,7 @@ export default function Sidebar({
 
 					<button
 						onClick={() => logout()}
-						className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 transition-colors duration-200 ${
+						className={`cursor-pointer w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 transition-colors duration-200 ${
 							collapsed ? "w-10 h-10 p-0" : ""
 						}`}
 						title="Sign out"
