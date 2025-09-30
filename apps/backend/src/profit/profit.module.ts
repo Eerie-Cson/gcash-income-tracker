@@ -12,5 +12,6 @@ import { AccountModule } from 'src/account/account.module';
     { provide: Token.ProfitRepository, useClass: ProfitRepository },
     ProfitService,
   ],
+  exports: [ProfitService],
 })
 export class ProfitModule {}
