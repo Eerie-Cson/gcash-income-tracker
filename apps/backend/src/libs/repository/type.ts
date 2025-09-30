@@ -26,9 +26,9 @@ export interface PaginationResult<T> {
 }
 
 export interface Repository<T> {
-  create(params: { data: Partial<T> }): Promise<T>;
+  create(params: { data: Partial<T> } & { client: any }): Promise<T>;
   fetch(filter?: any, orderBy?: any): Promise<T[]>;
   find(filter: any): Promise<T | null>;
   update(filter: any, data: Partial<T>): Promise<T | null>;
-  delete(filter: any): Promise<boolean>;
+  delete(params: { filter: any } & { client: any }): Promise<boolean>;
 }

@@ -162,23 +162,22 @@ export abstract class PgRepository<T> implements Repository<T> {
     return result.rows[0] ? this.deserializeData(result.rows[0]) : null;
   }
 
-  async delete(filter: Partial<Record<keyof T, any>>): Promise<boolean> {
-    const { clause, values } = this.buildWhereClause(filter);
+  async delete(
+    params: { filter: Partial<Record<keyof T, any>> },
+    client?: PoolClient,
+  ): Promise<boolean> {
+    const { clause, values } = this.buildWhereClause(params.filter);
+    const pgClient = client || this.pool;
 
-    if (!clause) {
-      throw new Error('Delete operation requires a filter');
-    }
-
-    const result = await this.pool.query(
+    const result = await pgClient.query(
       `DELETE FROM ${this.table} ${clause}`,
       values,
     );
     return result.rowCount > 0;
   }
 
-  async create(params: {
-    data: Partial<T> & { createdAt: Date; updatedAt: Date };
-  }): Promise<T> {
+  async create(params: { data: Partial<T> }, client?: PoolClient): Promise<T> {
+    const pgClient = client || this.pool;
     const serializedData = this.serializeData(params.data);
     const columns = Object.keys(serializedData);
     const values = columns.map((key) => serializedData[key]);
@@ -187,7 +186,7 @@ export abstract class PgRepository<T> implements Repository<T> {
     const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ');
 
     const query = `INSERT INTO ${this.table} (${fields}) VALUES (${placeholders}) RETURNING *`;
-    const result = await this.pool.query(query, values);
+    const result = await pgClient.query(query, values);
 
     return this.deserializeData(result.rows[0]);
   }
