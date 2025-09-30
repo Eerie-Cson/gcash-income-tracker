@@ -71,9 +71,12 @@ export default function Sidebar({
 								key={n.id}
 								onClick={() => {
 									setActive(n.id);
-									if (n.id === "transactions") router.push("/transactions");
-									else if (n.id === "dashboard") router.push("/dashboard");
-									else router.push(`/dashboard/${n.id}`);
+									router.push(`${n.id}`);
+									// if (n.id === "transactions") router.push("/transactions");
+									// else if (n.id === "dashboard") router.push("/dashboard");
+									// else if (n.id === NavigationType.Configurations)
+									// 	router.push("/configurations");
+									// else router.push(`/dashboard/${n.id}`);
 								}}
 								title={n.label}
 								className={`cursor-pointer group flex items-center gap-3 px-2 py-2 rounded-lg text-left transition-all duration-150 ${
