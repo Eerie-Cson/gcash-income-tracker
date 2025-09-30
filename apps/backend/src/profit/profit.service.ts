@@ -63,7 +63,6 @@ export class ProfitService {
     if (highestTier && amount < highestTier.minAmount) {
       return this.findProfitInTiers(amount, tiers);
     }
-    console.log(tiers);
 
     return this.calculateCumulativeProfit(
       amount,
@@ -78,8 +77,11 @@ export class ProfitService {
 
   private findProfitInTiers(amount: number, tiers: ProfitTier[]): number {
     return (
-      tiers.find((tier) => amount >= tier.minAmount && amount <= tier.maxAmount)
-        ?.profit || 0
+      Number(
+        tiers.find(
+          (tier) => amount >= tier.minAmount && amount <= tier.maxAmount,
+        )?.profit,
+      ) || 0
     );
   }
 
