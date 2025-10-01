@@ -85,7 +85,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 				</main>
 			</div>
 
-			<MobileDrawer
+			{/* <MobileDrawer
 				mobileOpen={mobileOpen}
 				nav={nav}
 				setActive={setActive}
@@ -102,7 +102,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 				setCompact={setCompact}
 				accent={accent}
 				setAccent={setAccent}
-			/>
+			/> */}
 		</ProtectedRoute>
 	);
 }

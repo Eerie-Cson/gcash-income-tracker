@@ -18,7 +18,7 @@ import {
 	Info,
 } from "lucide-react";
 import { TransactionType } from "@/utils/types";
-import { useWalletBalances } from "@/hooks/useWalletBalance";
+import { useDashboardData } from "@/hooks/useDashboardData";
 
 const enum Scenario {
 	PROFIT_IN_GCASH = "PROFIT_IN_GCASH",
@@ -72,7 +72,7 @@ const AddTransactionModal = ({
 	}) => {},
 	isCreating = false,
 }) => {
-	const { balances } = useWalletBalances();
+	const { balances } = useDashboardData();
 	const [formData, setFormData] = useState<FormData>({
 		type: TransactionType.CASH_IN,
 		scenario: Scenario.PROFIT_IN_GCASH,

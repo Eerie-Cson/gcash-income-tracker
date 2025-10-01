@@ -1,18 +1,21 @@
+import { useDashboardData } from "@/hooks/useDashboardData";
+import { useTransactionsApi } from "@/hooks/useTransactionsApi";
+import GreenButton from "@/ui/AddTransactionButton";
 import {
 	Bell,
 	Clock,
 	Download,
 	Filter,
 	MoreVertical,
-	Plus,
 	Search,
 } from "lucide-react";
 import Link from "next/link";
+import { useCallback, useState } from "react";
+import AddTransactionModal from "../transaction/AddTransactionModal";
 
 interface DashboardHeaderProps {
 	userName?: string;
 	notifications?: number;
-	onAddTransaction?: () => void;
 	onExport?: () => void;
 	onNotificationClick?: () => void;
 	accentClass?: string;
@@ -21,11 +24,18 @@ interface DashboardHeaderProps {
 const DashboardHeader = ({
 	userName = "John Doe",
 	notifications = 0,
-	onAddTransaction,
 	onExport,
 	onNotificationClick,
 	accentClass = "text-emerald-600",
 }: DashboardHeaderProps) => {
+	const [isOpen, setIsOpen] = useState(false);
+
+	const { refetchBalances } = useDashboardData();
+	const { creating, createTransaction } = useTransactionsApi();
+
+	const openModal = useCallback(() => setIsOpen(true), []);
+	const closeModal = useCallback(() => setIsOpen(false), []);
+
 	const currentDate = new Date();
 	const formattedDate = currentDate.toLocaleDateString("en-US", {
 		weekday: "long",
@@ -47,6 +57,14 @@ const DashboardHeader = ({
 	};
 
 	const firstName = userName.split(" ")[0];
+
+	const handleSubmit = async (data: any) => {
+		try {
+			await createTransaction(data);
+			await refetchBalances();
+			closeModal();
+		} catch (error) {}
+	};
 
 	return (
 		<header className="mb-8">
@@ -98,7 +116,7 @@ const DashboardHeader = ({
 					</button>
 
 					{/* Add Transaction Button - Primary CTA with accent color */}
-					<button
+					{/* <button
 						onClick={onAddTransaction}
 						className={`cursor-pointer flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:opacity-90 transition-opacity font-medium shadow-sm`}
 						aria-label="Add new transaction"
@@ -106,7 +124,9 @@ const DashboardHeader = ({
 						<Plus className="w-4 h-4" />
 						<span className="hidden sm:inline">Add Transaction</span>
 						<span className="sm:hidden">Add</span>
-					</button>
+					</button> */}
+
+					<GreenButton openModal={openModal} />
 
 					{/* Notifications */}
 					<button
@@ -150,6 +170,13 @@ const DashboardHeader = ({
 					Dashboard
 				</span>
 			</nav>
+
+			<AddTransactionModal
+				isOpen={isOpen}
+				onClose={closeModal}
+				onSubmit={handleSubmit}
+				isCreating={creating}
+			/>
 		</header>
 	);
 };

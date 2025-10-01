@@ -6,8 +6,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useTransactionsApi } from "@/hooks/useTransactionsApi";
 import { accentMap, borderMap, fontMap } from "@/utils/types";
-import { useCallback, useMemo, useState } from "react";
-import AddTransactionModal from "../transaction/AddTransactionModal";
+import { useMemo } from "react";
 import DashboardHeader from "./Header";
 import KpiCards from "./KpiCards";
 import Stats from "./Stats";
@@ -16,13 +15,9 @@ import TransactionsTable from "./TransactionsTable";
 
 export default function Dashboard() {
 	const { account } = useAuth();
-	const { balances, totalBalance, refetchBalances } = useDashboardData();
-	const { creating, createTransaction, transactions } = useTransactionsApi();
+	const { balances, totalBalance } = useDashboardData();
+	const { transactions } = useTransactionsApi();
 	const dashboardStats = useDashboardStats(transactions);
-	const [isOpen, setIsOpen] = useState(false);
-
-	const openModal = useCallback(() => setIsOpen(true), []);
-	const closeModal = useCallback(() => setIsOpen(false), []);
 
 	const { fontSize, compact, accent, setActive } = useDashboardUI();
 
@@ -39,14 +34,6 @@ export default function Dashboard() {
 		[accent]
 	);
 
-	const handleSubmit = async (data: any) => {
-		try {
-			await createTransaction(data);
-			await refetchBalances();
-			closeModal();
-		} catch (error) {}
-	};
-
 	const handleExport = () => {
 		console.log("Export clicked");
 	};
@@ -62,7 +49,7 @@ export default function Dashboard() {
 				<DashboardHeader
 					userName={account?.name}
 					accentClass={accentClass}
-					onAddTransaction={openModal}
+					// onAddTransaction={openModal}
 					onExport={handleExport}
 					onNotificationClick={handleNotificationClick}
 					notifications={3}
@@ -100,13 +87,6 @@ export default function Dashboard() {
 					Built with Tailwind • Clean UI • Settings available
 				</footer>
 			</div>
-
-			<AddTransactionModal
-				isOpen={isOpen}
-				onClose={closeModal}
-				onSubmit={handleSubmit}
-				isCreating={creating}
-			/>
 
 			{/* <MobileDrawer
 				mobileOpen={mobileOpen}

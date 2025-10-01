@@ -1,7 +1,12 @@
 import React, { Dispatch, SetStateAction } from "react";
 import TransactionsList from "./TransactionsList";
 import { ArrowRight, Filter, Search } from "lucide-react";
-import { Transaction, NavItemId } from "@/utils/types";
+import {
+	Transaction,
+	NavItemId,
+	TransactionType,
+	NavigationType,
+} from "@/utils/types";
 import { useRouter } from "next/navigation";
 
 interface TransactionsTableProps {
@@ -103,7 +108,7 @@ const TransactionsTable = ({
 					</div>
 					<button
 						onClick={() => {
-							setActive("transactions");
+							setActive(NavigationType.Transactions);
 							router.push("/transactions/");
 						}}
 						className={`cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition-all duration-200 text-sm font-medium hover:border-slate-300 group`}
