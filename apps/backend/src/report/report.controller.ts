@@ -21,4 +21,12 @@ export class ReportController {
     }
     return this.reportService.getProfitSummary(req.user.userId);
   }
+
+  @Get('dashboard-stats')
+  async getDashboardStats(@Request() req: AuthRequest) {
+    if (!req.user) {
+      throw new NotFoundException('User not found');
+    }
+    return this.reportService.getDashboardStats(req.user.userId);
+  }
 }

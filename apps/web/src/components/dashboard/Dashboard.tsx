@@ -3,7 +3,10 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardUI } from "@/contexts/DashboardUIContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import { useDashboardStats } from "@/hooks/useDashboardStats";
+import {
+	useDashboardStats,
+	useProfitSummary,
+} from "@/hooks/useDashboardReport";
 import { useTransactionsApi } from "@/hooks/useTransactionsApi";
 import { accentMap, borderMap, fontMap } from "@/utils/types";
 import { useMemo } from "react";
@@ -12,13 +15,12 @@ import KpiCards from "./KpiCards";
 import Stats from "./Stats";
 import TotalBalanceSummary from "./TotalBalanceSummary";
 import TransactionsTable from "./TransactionsTable";
-import { useProfitSummary } from "@/hooks/useDashboardReport";
 
 export default function Dashboard() {
 	const { account } = useAuth();
 	const { balances, totalBalance } = useDashboardData();
 	const { transactions } = useTransactionsApi();
-	const dashboardStats = useDashboardStats(transactions);
+	const { stats: dashboardStats } = useDashboardStats();
 
 	const { totalProfit, loading: profitLoading } = useProfitSummary();
 
@@ -56,7 +58,6 @@ export default function Dashboard() {
 				<DashboardHeader
 					userName={account?.name}
 					accentClass={accentClass}
-					// onAddTransaction={openModal}
 					onExport={handleExport}
 					onNotificationClick={handleNotificationClick}
 					notifications={3}
@@ -83,12 +84,7 @@ export default function Dashboard() {
 					compact={compact}
 				/>
 
-				<Stats
-					dashboardStats={dashboardStats}
-					compact={compact}
-					accentBorderClass={accentBorderClass}
-					accentClass={accentClass}
-				/>
+				<Stats dashboardStats={dashboardStats} />
 
 				<footer className="mt-8 text-sm text-slate-500 text-center">
 					Built with Tailwind • Clean UI • Settings available
