@@ -36,10 +36,10 @@ const Stats = ({
 			colorClasses: "text-orange-600 bg-orange-50 border-orange-100",
 		},
 		{
-			key: "monthlyCommission",
-			label: "Monthly Commission",
+			key: "today's profit",
+			label: "Profit",
 			value: `₱${dashboardStats.monthlyCommission.toLocaleString()}`,
-			subtitle: "this month",
+			subtitle: "today",
 			icon: Calendar,
 			color: "emerald",
 			colorClasses: `${accentClass} bg-emerald-50 ${accentBorderClass}`,

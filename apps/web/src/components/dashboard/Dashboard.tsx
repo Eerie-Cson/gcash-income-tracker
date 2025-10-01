@@ -12,12 +12,15 @@ import KpiCards from "./KpiCards";
 import Stats from "./Stats";
 import TotalBalanceSummary from "./TotalBalanceSummary";
 import TransactionsTable from "./TransactionsTable";
+import { useProfitSummary } from "@/hooks/useDashboardReport";
 
 export default function Dashboard() {
 	const { account } = useAuth();
 	const { balances, totalBalance } = useDashboardData();
 	const { transactions } = useTransactionsApi();
 	const dashboardStats = useDashboardStats(transactions);
+
+	const { totalProfit, loading: profitLoading } = useProfitSummary();
 
 	const { fontSize, compact, accent, setActive } = useDashboardUI();
 
@@ -41,6 +44,10 @@ export default function Dashboard() {
 		console.log("Notifications clicked");
 	};
 
+	if (profitLoading) {
+		return <div>Loading profit data...</div>;
+	}
+
 	return (
 		<>
 			<div
@@ -57,7 +64,7 @@ export default function Dashboard() {
 
 				<KpiCards
 					balances={balances}
-					totalProfit={0}
+					totalProfit={totalProfit}
 					accentClass={accentClass}
 					compact={compact}
 					accent={accent}
