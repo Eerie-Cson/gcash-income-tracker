@@ -34,6 +34,7 @@ export async function getTransactions(params?: {
 }
 
 export async function transferTransaction(payload: {
+	separateFee?: boolean;
 	transactionType: TransactionType;
 	amount: number;
 	description?: string;
@@ -54,6 +55,7 @@ export async function transferTransaction(payload: {
 			transactionDate: payload.transactionDate ?? new Date().toISOString(),
 			customerName: payload.customerName,
 			customerPhone: payload.customerPhone,
+			...(payload.separateFee ? { separateFee: payload.separateFee } : {}),
 		},
 		{
 			headers: {

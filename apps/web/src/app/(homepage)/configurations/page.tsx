@@ -32,7 +32,7 @@ export default function ConfigurationPage() {
 					id: fee.id || `fee-${Date.now()}-${index}`,
 					minAmount: Number(fee.minAmount),
 					maxAmount: Number(fee.maxAmount),
-					fee: Number(fee.fee),
+					fee: Number(fee.profit),
 				}));
 				setFeeStructures(transformedFees);
 			}

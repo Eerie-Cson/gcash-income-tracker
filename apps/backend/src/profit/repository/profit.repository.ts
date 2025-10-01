@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { PgRepository, Repository, Table } from '../../libs/repository';
-import { Token } from '../../libs/database/lib/token';
-import { ProfitTier } from '../../libs/types/profit';
 import { Pool, PoolClient } from 'pg';
+import { Token } from '../../libs/database/lib/token';
+import { PgRepository, Repository, Table } from '../../libs/repository';
+import { ProfitTier } from '../../libs/types/profit';
 
 @Injectable()
 export class ProfitRepository

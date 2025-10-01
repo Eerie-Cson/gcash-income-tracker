@@ -3,12 +3,12 @@ export type ProfitTier = Node & {
   maxAmount: number;
   minAmount: number;
   accountId: string;
-  fee: number;
+  profit: number;
   createdAt: Date;
   updatedAt: Date;
 };
 
 export type CreateTierRequest = Pick<
   ProfitTier,
-  'maxAmount' | 'minAmount' | 'fee'
->;
+  'maxAmount' | 'minAmount' | 'profit'
+> & { fee: number };

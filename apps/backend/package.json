@@ -27,10 +27,12 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
+    "@types/ramda": "^0.31.1",
     "bcrypt": "^6.0.0",
     "change-case": "^5.4.4",
     "passport-jwt": "^4.0.1",
     "pg": "^8.16.3",
+    "ramda": "^0.31.3",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },

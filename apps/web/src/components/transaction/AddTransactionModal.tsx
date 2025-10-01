@@ -15,12 +15,19 @@ import {
 	Wallet,
 	AlertTriangle,
 	Calendar,
+	Info,
 } from "lucide-react";
 import { TransactionType } from "@/utils/types";
 import { useWalletBalances } from "@/hooks/useWalletBalance";
 
+const enum Scenario {
+	PROFIT_IN_GCASH = "PROFIT_IN_GCASH",
+	PROFIT_IN_CASH = "PROFIT_IN_CASH",
+}
+
 interface FormData {
 	type: typeof TransactionType.CASH_IN | typeof TransactionType.CASH_OUT;
+	scenario?: Scenario;
 	amount: string;
 	customerName: string;
 	customerPhone: string;
@@ -55,6 +62,7 @@ const AddTransactionModal = ({
 	onClose = () => {},
 	onSubmit = async (data: {
 		transactionType: TransactionType;
+		separateFee?: boolean;
 		amount: number;
 		customerName: string;
 		customerPhone: string;
@@ -67,6 +75,7 @@ const AddTransactionModal = ({
 	const { balances } = useWalletBalances();
 	const [formData, setFormData] = useState<FormData>({
 		type: TransactionType.CASH_IN,
+		scenario: Scenario.PROFIT_IN_GCASH,
 		amount: "",
 		customerName: "",
 		customerPhone: "",
@@ -82,6 +91,7 @@ const AddTransactionModal = ({
 		if (!isOpen) {
 			setFormData({
 				type: TransactionType.CASH_IN,
+				scenario: Scenario.PROFIT_IN_GCASH,
 				amount: "",
 				customerName: "",
 				customerPhone: "",
@@ -160,6 +170,9 @@ const AddTransactionModal = ({
 		try {
 			await onSubmit({
 				transactionType: formData.type,
+				...(formData.type === TransactionType.CASH_OUT
+					? { separateFee: formData.scenario === Scenario.PROFIT_IN_CASH }
+					: {}),
 				amount: Number(formData.amount),
 				customerName: formData.customerName.trim(),
 				customerPhone: formData.customerPhone.replace(/\s+/g, ""),
@@ -179,6 +192,18 @@ const AddTransactionModal = ({
 	};
 
 	if (!isOpen) return null;
+
+	const getTransactionDescription = () => {
+		if (formData.type === TransactionType.CASH_IN) {
+			return "Customer pays with real cash (including profit). You send equivalent amount via GCash.";
+		} else {
+			if (formData.scenario === "PROFIT_IN_GCASH") {
+				return "Customer sends cash-out amount + profit via GCash. You provide equivalent cash (excluding profit).";
+			} else {
+				return "Customer sends cash-out amount via GCash + pays profit separately in cash. You provide cash-out amount.";
+			}
+		}
+	};
 
 	return (
 		<>
@@ -307,6 +332,77 @@ const AddTransactionModal = ({
 											<span className="font-medium text-sm">{label}</span>
 										</button>
 									))}
+								</div>
+							</div>
+
+							{/* Cash-Out Scenario Selector - NEW */}
+							{formData.type === TransactionType.CASH_OUT && (
+								<div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+									<label className="block text-sm font-semibold text-gray-700 mb-3">
+										Cash-Out Scenarios
+									</label>
+									<div className="space-y-3">
+										<label className="flex items-start gap-3 p-3 bg-white rounded-lg border-2 cursor-pointer hover:border-blue-400 transition-colors border-gray-200 has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+											<input
+												type="radio"
+												name="scenario"
+												value="PROFIT_IN_GCASH"
+												checked={formData.scenario === "PROFIT_IN_GCASH"}
+												onChange={(e) =>
+													handleInputChange("scenario", e.target.value)
+												}
+												className="mt-1 w-4 h-4 text-blue-600 cursor-pointer"
+											/>
+											<div className="flex-1">
+												<div className="font-medium text-gray-900 text-sm">
+													Transaction Fee Included in GCash
+												</div>
+												<div className="text-xs text-gray-600 mt-1">
+													Customer sends amount + profit via GCash. You give
+													cash (amount only).
+												</div>
+											</div>
+										</label>
+
+										<label className="flex items-start gap-3 p-3 bg-white rounded-lg border-2 cursor-pointer hover:border-blue-400 transition-colors border-gray-200 has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+											<input
+												type="radio"
+												name="scenario"
+												value="PROFIT_IN_CASH"
+												checked={formData.scenario === "PROFIT_IN_CASH"}
+												onChange={(e) =>
+													handleInputChange("scenario", e.target.value)
+												}
+												className="mt-1 w-4 h-4 text-blue-600 cursor-pointer"
+											/>
+											<div className="flex-1">
+												<div className="font-medium text-gray-900 text-sm">
+													Transaction Fee Paid Separately in Cash
+												</div>
+												<div className="text-xs text-gray-600 mt-1">
+													Customer sends amount via GCash + pays profit in cash.
+													You give cash (amount only).
+												</div>
+											</div>
+										</label>
+									</div>
+								</div>
+							)}
+
+							{/* Transaction Flow Info - NEW */}
+							<div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
+								<div className="flex items-start gap-2">
+									<Info className="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" />
+									<div className="flex-1">
+										<div className="font-semibold text-sm text-indigo-900 mb-1">
+											{formData.type === TransactionType.CASH_IN
+												? "Cash-In"
+												: "Transaction Flow"}
+										</div>
+										<p className="text-xs text-indigo-700">
+											{getTransactionDescription()}
+										</p>
+									</div>
 								</div>
 							</div>
 

@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS "Transaction" (
     "account_id" UUID REFERENCES "Account"("id") ON DELETE CASCADE,
     "description" TEXT,                              
     "amount" NUMERIC NOT NULL,
+    "profit" NUMERIC NOT NULL,
     "transaction_type" TransactionType NOT NULL,
     "reference_number" TEXT,                  
     "transaction_date" TIMESTAMP NOT NULL,

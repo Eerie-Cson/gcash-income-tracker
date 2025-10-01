@@ -37,6 +37,6 @@ export class ProfitController {
     if (!req.user) {
       throw new NotFoundException('User not found');
     }
-    return this.profitService.getTiers(req.user.userId);
+    return this.profitService.getActiveTiers(req.user.userId);
   }
 }

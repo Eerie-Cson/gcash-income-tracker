@@ -68,19 +68,27 @@ export class TransactionsController {
       body.amount = 0;
     }
     if (body?.transactionType === TransactionType.CASH_IN) {
-      return this.transactionsService.transfer({
+      // return this.transactionsService.transfer({
+      //   ...body,
+      //   to: WalletType.CASH,
+      //   from: WalletType.GCASH,
+      //   accountId: req.user.userId,
+      // });
+      return this.transactionsService.cashIn({
         ...body,
-        to: WalletType.CASH,
-        from: WalletType.GCASH,
         accountId: req.user.userId,
       });
     }
 
     if (body?.transactionType === TransactionType.CASH_OUT) {
-      return this.transactionsService.transfer({
+      // return this.transactionsService.transfer({
+      //   ...body,
+      //   to: WalletType.GCASH,
+      //   from: WalletType.CASH,
+      //   accountId: req.user.userId,
+      // });
+      return this.transactionsService.cashOut({
         ...body,
-        to: WalletType.GCASH,
-        from: WalletType.CASH,
         accountId: req.user.userId,
       });
     }
@@ -93,37 +101,40 @@ export class TransactionsController {
     };
   }
 
-  @Post('cash-in')
-  async cashIn(
-    @Request() req: AuthRequest,
-    @Body() body: CreateTransactionRequest,
-  ) {
-    if (!req.user) {
-      throw new NotFoundException('User not found');
-    }
-    if (!body.amount || body.amount < 0) {
-      body.amount = 0;
-    }
-    return this.transactionsService.cashIn({
-      ...body,
-      accountId: req.user.userId,
-    });
-  }
+  // @Post('cash-in')
+  // async cashIn(
+  //   @Request() req: AuthRequest,
+  //   @Body() body: CreateTransactionRequest,
+  // ) {
+  //   if (!req.user) {
+  //     throw new NotFoundException('User not found');
+  //   }
+  //   if (!body.amount || body.amount < 0) {
+  //     body.amount = 0;
+  //   }
+  //   return this.transactionsService.cashIn({
+  //     ...body,
+  //     accountId: req.user.userId,
+  //   });
+  // }
 
-  @Post('cash-out')
-  async cashOut(
-    @Request() req: AuthRequest,
-    @Body() body: CreateTransactionRequest,
-  ) {
-    if (!req.user) {
-      throw new NotFoundException('User not found');
-    }
-    if (!body.amount || body.amount < 0) {
-      body.amount = 0;
-    }
-    return this.transactionsService.cashOut({
-      ...body,
-      accountId: req.user.userId,
-    });
-  }
+  // @Post('cash-out')
+  // async cashOut(
+  //   @Request() req: AuthRequest,
+  //   @Body() body: CreateTransactionRequest,
+  // ) {
+  //   if (!req.user) {
+  //     throw new NotFoundException('User not found');
+  //   }
+  //   if (!body.amount || body.amount < 0) {
+  //     body.amount = 0;
+  //   }
+
+  //   return this.transactionsService.cashOut({
+  //     ...body,
+  //     transactionType: TransactionType.CASH_OUT,
+  //     accountId: req.user.userId,
+  //     separateFee: body.separateFee,
+  //   });
+  // }
 }
