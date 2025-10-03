@@ -1,6 +1,6 @@
-import { Module, Global, OnModuleDestroy, Inject } from '@nestjs/common';
-import { Pool } from 'pg';
+import { Global, Inject, Module, OnModuleDestroy } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Pool } from 'pg';
 import { Token } from './lib/token';
 
 @Global()
@@ -11,10 +11,16 @@ import { Token } from './lib/token';
       provide: Token.PG_POOL,
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {
-        const connection = config.get<string>('DATABASE_URL');
+        const connection =
+          config.get<string>('DATABASE_URL') ||
+          'postgres://admin:root@localhost:5432/test_db';
         return new Pool({
           connectionString: connection,
           max: 5,
+          ssl:
+            config.get<string>('ENV') === 'production'
+              ? { rejectUnauthorized: false }
+              : false,
         });
       },
     },
