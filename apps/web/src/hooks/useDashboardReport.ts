@@ -41,7 +41,7 @@ export function useDashboardStats() {
 		todayCount: 0,
 		weeklyAverage: 0,
 		largestTransaction: 0,
-		todayProfit: 0,
+		todaysProfit: 0,
 	};
 
 	const { token } = useAuth();
