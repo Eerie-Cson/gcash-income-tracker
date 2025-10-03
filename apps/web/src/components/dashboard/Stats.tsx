@@ -42,7 +42,7 @@ const Stats = ({ dashboardStats }: { dashboardStats: DashboardStats }) => {
 	];
 
 	return (
-		<section className={`mt-6`}>
+		<section className="mt-6">
 			{/* Section Header */}
 			<div className="flex items-center justify-between mb-4">
 				<h3 className="text-lg font-semibold text-slate-700">Quick Stats</h3>
