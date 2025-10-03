@@ -1,6 +1,5 @@
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
-	Plus,
 	Search,
 	Download,
 	Edit3,
@@ -20,6 +19,7 @@ import Notification from "../../ui/Notification";
 import { useNotification } from "@/hooks/useNotification";
 import Link from "next/link";
 import GreenButton from "@/ui/AddTransactionButton";
+import { CustomerTransaction, CreatePayload } from "@/hooks/useTransactionsApi";
 
 const TransactionsSection: React.FC = () => {
 	const {
@@ -42,8 +42,11 @@ const TransactionsSection: React.FC = () => {
 	const [filterType, setFilterType] = useState("all");
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage] = useState(10);
-	const [selectedTransaction, setSelectedTransaction] = useState<any>(null);
-	const [showDeleteConfirm, setShowDeleteConfirm] = useState<any>(null);
+	const [selectedTransaction, setSelectedTransaction] =
+		useState<CustomerTransaction | null>(null);
+	const [showDeleteConfirm, setShowDeleteConfirm] = useState<
+		string | null | undefined
+	>(null);
 
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
@@ -84,7 +87,7 @@ const TransactionsSection: React.FC = () => {
 	}, []);
 
 	const handleAddTransaction = useCallback(
-		async (data: any) => {
+		async (data: CreatePayload) => {
 			try {
 				await createTransaction(data);
 
@@ -453,7 +456,8 @@ const TransactionsSection: React.FC = () => {
 									<div className="flex items-center justify-between">
 										<span className="text-sm text-slate-600">Type</span>
 										<span className="font-medium">
-											{selectedTransaction.type === "cash-in"
+											{selectedTransaction.transactionType ===
+											TransactionType.CASH_IN
 												? "Cash In"
 												: "Cash Out"}
 										</span>
@@ -488,7 +492,7 @@ const TransactionsSection: React.FC = () => {
 									<div className="flex items-center justify-between">
 										<span className="text-sm text-slate-600">Reference</span>
 										<span className="font-medium font-mono text-sm">
-											{selectedTransaction.reference}
+											{selectedTransaction.referenceNumber}
 										</span>
 									</div>
 
@@ -515,11 +519,11 @@ const TransactionsSection: React.FC = () => {
 										</div>
 									</div>
 
-									{selectedTransaction.notes && (
+									{selectedTransaction.description && (
 										<div className="pt-4 border-t border-slate-200">
 											<span className="text-sm text-slate-600">Notes</span>
 											<p className="mt-1 text-sm text-slate-900">
-												{selectedTransaction.notes}
+												{selectedTransaction.description}
 											</p>
 										</div>
 									)}

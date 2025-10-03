@@ -1,7 +1,13 @@
 "use client";
 import React from "react";
 
-export default function MiniSpark({ values = [], accent = "emerald" }: any) {
+export default function MiniSpark({
+	values = [],
+	accent = "emerald",
+}: {
+	values: number[];
+	accent?: string;
+}) {
 	if (!values || values.length === 0) return null;
 	const max = Math.max(...values);
 	const points = values

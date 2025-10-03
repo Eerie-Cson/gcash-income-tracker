@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { X } from "lucide-react";
+import { NavItem, NavItemId } from "@/utils/types";
 
 export default function MobileDrawer({
 	mobileOpen,
@@ -8,7 +9,13 @@ export default function MobileDrawer({
 	setActive,
 	setMobileOpen,
 	setSettingsOpen,
-}: any) {
+}: {
+	mobileOpen: boolean;
+	nav: NavItem[];
+	setActive: (id: NavItemId) => void;
+	setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
+	setSettingsOpen: (v: boolean) => void;
+}) {
 	if (!mobileOpen) return null;
 	return (
 		<div className="md:hidden fixed inset-0 z-40 bg-black/30">
@@ -24,13 +31,13 @@ export default function MobileDrawer({
 				</div>
 
 				<nav className="flex flex-col gap-2">
-					{nav.map((n: any) => {
+					{nav.map((n: NavItem) => {
 						const Icon = n.icon;
 						return (
 							<button
 								key={n.id}
 								onClick={() => {
-									setActive(n.id as any);
+									setActive(n.id as NavItemId);
 									setMobileOpen(false);
 								}}
 								className="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-slate-700 hover:bg-slate-50"

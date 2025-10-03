@@ -1,10 +1,13 @@
-import { useDashboardStats } from "@/hooks/useDashboardReport";
 import { useTransactionsApi } from "@/hooks/useTransactionsApi";
 import MiniSpark from "@/ui/Minispark";
 import { CreditCard, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+enum WalletType {
+	gcash = "gcash",
+	cash = "cash",
+}
 
 interface KpiCardsProps {
-	balances: any;
+	balances: Record<WalletType, number>;
 	totalProfit: number;
 	compact: boolean;
 	accent: string;
@@ -13,7 +16,6 @@ interface KpiCardsProps {
 
 export function timeAgo(date?: Date | string): string {
 	if (!date) return "No transactions yet";
-	const now = new Date();
 
 	const past = typeof date === "string" ? new Date(date) : date;
 
@@ -40,7 +42,6 @@ const KpiCards = ({
 	accentClass,
 }: KpiCardsProps) => {
 	const { transactions } = useTransactionsApi();
-	const { stats } = useDashboardStats();
 
 	const lastUpdated =
 		transactions.length > 0 && transactions[0].transactionDate

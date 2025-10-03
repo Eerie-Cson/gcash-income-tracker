@@ -1,21 +1,21 @@
 "use client";
 
-import { useDashboardUI } from "@/contexts/DashboardUIContext";
-import { accentMap, borderMap, fontMap } from "@/utils/types";
+// import { useDashboardUI } from "@/contexts/DashboardUIContext";
+// import { accentMap, borderMap, fontMap } from "@/utils/types";
 import {
 	AlertCircle,
-	Check,
+	// Check,
 	DollarSign,
 	Info,
 	Plus,
 	Save,
-	Settings,
+	// Settings,
 	Trash2,
 	Wallet,
-	X,
-	CheckCircle2,
-	XCircle,
-	AlertTriangle,
+	// X,
+	// CheckCircle2,
+	// XCircle,
+	// AlertTriangle,
 } from "lucide-react";
 import { useCallback, useMemo, useState, useEffect } from "react";
 import Link from "next/link";
@@ -29,7 +29,11 @@ interface FeeStructure {
 }
 
 interface ConfigurationProps {
-	onSave?: (data: any) => void;
+	onSave?: (data: {
+		cashBalance: number;
+		gcashBalance: number;
+		feeStructures: FeeStructure[];
+	}) => void;
 	initialData?: {
 		cashBalance: number;
 		gcashBalance: number;

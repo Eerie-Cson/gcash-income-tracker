@@ -2,8 +2,8 @@
 
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import Sidebar from "@/components/dashboard/Sidebar";
-import MobileDrawer from "@/components/mobile/MobileDrawer";
-import SettingsPanel from "@/components/settings/SettingsPanel";
+// import MobileDrawer from "@/components/mobile/MobileDrawer";
+// import SettingsPanel from "@/components/settings/SettingsPanel";
 import { nav } from "@/const/NavigationList";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardData } from "@/hooks/useDashboardData";

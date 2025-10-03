@@ -1,12 +1,7 @@
 import React, { Dispatch, SetStateAction } from "react";
 import TransactionsList from "./TransactionsList";
 import { ArrowRight, Filter, Search } from "lucide-react";
-import {
-	Transaction,
-	NavItemId,
-	TransactionType,
-	NavigationType,
-} from "@/utils/types";
+import { Transaction, NavItemId, NavigationType } from "@/utils/types";
 import { useRouter } from "next/navigation";
 
 interface TransactionsTableProps {
@@ -24,7 +19,7 @@ const TransactionsTable = ({
 	const router = useRouter();
 	const recentTransactions = transactions.slice(0, 5);
 
-	const todayTransactions = transactions.filter((t: any) => {
+	const todayTransactions = transactions.filter((t: Transaction) => {
 		const today = new Date().toDateString();
 		return new Date(t.transactionDate).toDateString() === today;
 	}).length;

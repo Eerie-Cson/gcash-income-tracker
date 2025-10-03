@@ -1,10 +1,9 @@
-import { useDashboardStats } from "@/hooks/useDashboardReport";
 import { useTransactionsApi } from "@/hooks/useTransactionsApi";
 import { Calendar, RefreshCw, TrendingUp } from "lucide-react";
 
 export function timeAgo(date?: Date | string): string {
 	if (!date) return "No transactions yet";
-	const now = new Date();
+	// const now = new Date();
 
 	const past = typeof date === "string" ? new Date(date) : date;
 
@@ -33,7 +32,6 @@ const TotalBalanceSummary = ({
 	accentBorderClass: string;
 	accentClass: string;
 }) => {
-	const { stats } = useDashboardStats();
 	const growthPercentage = 5.2;
 	const isPositiveGrowth = growthPercentage > 0;
 	const { transactions } = useTransactionsApi();

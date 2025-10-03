@@ -9,5 +9,5 @@ export enum NavigationType {
 export interface NavItem {
 	id: NavItemId;
 	label: string;
-	icon: React.ComponentType<any>;
+	icon: React.ComponentType<{ className?: string; size?: number }>;
 }

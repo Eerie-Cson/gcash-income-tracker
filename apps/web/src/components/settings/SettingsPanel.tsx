@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { X } from "lucide-react";
+import { Accent, FontSize } from "@/utils/types";
 
 export default function SettingsPanel({
 	open,
@@ -11,7 +12,16 @@ export default function SettingsPanel({
 	setCompact,
 	accent,
 	setAccent,
-}: any) {
+}: {
+	open: boolean;
+	setOpen: (open: boolean) => void;
+	fontSize: FontSize;
+	setFontSize: (fontSize: FontSize) => void;
+	compact: boolean;
+	setCompact: (compact: boolean) => void;
+	accent: Accent;
+	setAccent: (accent: Accent) => void;
+}) {
 	return (
 		<div
 			className={`fixed right-0 top-0 h-full z-50 transform transition-transform duration-200 ${

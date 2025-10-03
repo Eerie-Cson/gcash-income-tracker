@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Menu, X, Settings, Search } from "lucide-react";
+import { Menu, X, Settings } from "lucide-react";
 
 export default function Topbar({
 	mobileOpen,
@@ -10,7 +10,7 @@ export default function Topbar({
 }: {
 	mobileOpen: boolean;
 	setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
-	balances: any;
+	balances: { cash: number; gcash: number };
 	setSettingsOpen: (v: boolean) => void;
 }) {
 	return (

@@ -32,9 +32,15 @@ export default function RegisterForm({ onRegister }: RegisterFormProps) {
 		try {
 			await onRegister(email, password, name);
 			router.push("/dashboard");
-		} catch (err: any) {
+		} catch (err: unknown) {
 			console.error("Register error", err);
-			setError(err?.message || "Registration failed");
+			if (typeof err === "object" && err !== null && "message" in err) {
+				setError(
+					(err as { message?: string }).message || "Registration failed"
+				);
+			} else {
+				setError("Registration failed");
+			}
 		} finally {
 			setIsLoading(false);
 		}

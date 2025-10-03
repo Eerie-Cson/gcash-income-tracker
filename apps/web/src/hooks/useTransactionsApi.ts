@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Transaction, TransactionType } from "@/utils/types";
 import { useCallback, useEffect, useState } from "react";
 
-type CreatePayload = {
+export type CreatePayload = {
 	transactionType: TransactionType.CASH_IN | TransactionType.CASH_OUT;
 	separateFee?: boolean;
 	amount: number;
@@ -11,10 +11,10 @@ type CreatePayload = {
 	customerPhone?: string;
 	notes?: string;
 	referenceNumber?: string;
-	transactionDate: Date;
+	transactionDate: string;
 };
 
-type CustomerTransaction = Transaction & {
+export type CustomerTransaction = Transaction & {
 	customerName?: string;
 	referenceNumber?: string;
 	customerPhone?: string;
@@ -86,7 +86,7 @@ export function useTransactionsApi() {
 					hasNext: data.hasNext || false,
 					hasPrev: data.hasPrev || false,
 				});
-			} catch (err: any) {
+			} catch (err: unknown) {
 				setError(err instanceof Error ? err : new Error(String(err)));
 			} finally {
 				setLoading(false);
@@ -124,7 +124,7 @@ export function useTransactionsApi() {
 				await fetchPaginatedTransactions({ page: 1 });
 				await refreshBalances();
 				return true;
-			} catch (err: any) {
+			} catch (err: unknown) {
 				setError(err instanceof Error ? err : new Error(String(err)));
 				throw err;
 			} finally {

@@ -23,7 +23,7 @@ export function useDashboardData() {
 				cash: Number(wallet.cashBalance),
 				gcash: Number(wallet.gcashBalance),
 			});
-		} catch (err: any) {
+		} catch (err: unknown) {
 			setError(err instanceof Error ? err : new Error(String(err)));
 		} finally {
 			setLoading(false);

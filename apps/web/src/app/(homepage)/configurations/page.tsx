@@ -4,7 +4,7 @@ import { manualWalletAdjustment } from "@/api/wallet";
 import Configuration from "@/components/configuration/Configuration";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { saveTransactionFees, getTransactionFees } from "@/api/profit";
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 type FeeStructure = {
 	id: string;
@@ -28,7 +28,7 @@ export default function ConfigurationPage() {
 			const feesData = await getTransactionFees();
 
 			if (feesData && Array.isArray(feesData)) {
-				const transformedFees = feesData.map((fee: any, index: number) => ({
+				const transformedFees = feesData.map((fee, index: number) => ({
 					id: fee.id || `fee-${Date.now()}-${index}`,
 					minAmount: Number(fee.minAmount),
 					maxAmount: Number(fee.maxAmount),
@@ -54,7 +54,11 @@ export default function ConfigurationPage() {
 		feeStructures: feeStructures,
 	};
 
-	const handleSave = async (data: any) => {
+	const handleSave = async (data: {
+		cashBalance: number;
+		gcashBalance: number;
+		feeStructures: FeeStructure[];
+	}) => {
 		try {
 			await manualWalletAdjustment({
 				amount: data.cashBalance,

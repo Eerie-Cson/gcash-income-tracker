@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import {
 	CheckCircle2,
 	X,
-	AlertCircle,
+	// AlertCircle,
 	AlertTriangle,
 	Info,
 	XCircle,

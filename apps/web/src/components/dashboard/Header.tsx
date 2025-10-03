@@ -1,5 +1,5 @@
 import { useDashboardData } from "@/hooks/useDashboardData";
-import { useTransactionsApi } from "@/hooks/useTransactionsApi";
+import { CreatePayload, useTransactionsApi } from "@/hooks/useTransactionsApi";
 import GreenButton from "@/ui/AddTransactionButton";
 import {
 	Bell,
@@ -58,12 +58,14 @@ const DashboardHeader = ({
 
 	const firstName = userName.split(" ")[0];
 
-	const handleSubmit = async (data: any) => {
+	const handleSubmit = async (data: CreatePayload) => {
 		try {
 			await createTransaction(data);
 			await refetchBalances();
 			closeModal();
-		} catch (error) {}
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	return (
