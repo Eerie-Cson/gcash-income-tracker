@@ -7,7 +7,6 @@ import SettingsPanel from "@/components/settings/SettingsPanel";
 import { nav } from "@/const/NavigationList";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import { useTransactionsApi } from "@/hooks/useTransactionsApi";
 import { fontMap, NavigationType } from "@/utils/types";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useMemo } from "react";
@@ -15,33 +14,28 @@ import {
 	DashboardUIProvider,
 	useDashboardUI,
 } from "../../contexts/DashboardUIContext";
+import { useProfitSummary } from "@/hooks/useDashboardReport";
 
 function InnerLayout({ children }: { children: React.ReactNode }) {
-	const { transactions } = useTransactionsApi();
 	const { balances } = useDashboardData();
 	const { logout } = useAuth();
 
 	const {
-		mobileOpen,
-		setMobileOpen,
-		settingsOpen,
+		// mobileOpen,
+		// setMobileOpen,
+		// settingsOpen,
 		setSettingsOpen,
 		active,
 		setActive,
 		collapsed,
 		setCollapsed,
 		fontSize,
-		setFontSize,
-		compact,
-		setCompact,
-		accent,
-		setAccent,
+		// setFontSize,
+		// compact,
+		// setCompact,
+		// accent,
+		// setAccent,
 	} = useDashboardUI();
-
-	const totalProfit = useMemo(
-		() => transactions.reduce((s, t) => s + (t?.profit || 0), 0),
-		[transactions]
-	);
 
 	const fontClass = useMemo(
 		() => fontMap[fontSize as keyof typeof fontMap] || fontMap.large,
@@ -60,6 +54,11 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 		else if (pathname.startsWith("/configurations"))
 			setActive(NavigationType.Configurations);
 	}, [pathname, setActive]);
+
+	const { totalProfit, loading: profitLoading } = useProfitSummary();
+	if (profitLoading) {
+		return <div>Loading profit data...</div>;
+	}
 
 	return (
 		<ProtectedRoute>

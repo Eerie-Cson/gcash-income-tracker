@@ -1,14 +1,7 @@
-import Card from "@/ui/Card";
-import MiniSpark from "@/ui/Minispark";
-import React from "react";
-import {
-	Wallet,
-	CreditCard,
-	TrendingUp,
-	TrendingDown,
-	BanknoteArrowUp,
-} from "lucide-react";
+import { useDashboardStats } from "@/hooks/useDashboardReport";
 import { useTransactionsApi } from "@/hooks/useTransactionsApi";
+import MiniSpark from "@/ui/Minispark";
+import { CreditCard, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 
 interface KpiCardsProps {
 	balances: any;
@@ -46,15 +39,15 @@ const KpiCards = ({
 	compact,
 	accentClass,
 }: KpiCardsProps) => {
-	// Calculate profit trend (you'd implement this based on historical data)
 	const { transactions } = useTransactionsApi();
+	const { stats } = useDashboardStats();
 
 	const lastUpdated =
 		transactions.length > 0 && transactions[0].transactionDate
 			? transactions[0].transactionDate
 			: undefined;
 	const profitTrend = totalProfit >= 0 ? "up" : "down";
-	const profitPercentage = 5.2; // This should be calculated from actual data
+	const profitPercentage = 5.2; // This should be calculated from backend
 
 	const cards = [
 		{

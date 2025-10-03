@@ -3,7 +3,10 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardUI } from "@/contexts/DashboardUIContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
-import { useDashboardStats } from "@/hooks/useDashboardStats";
+import {
+	useDashboardStats,
+	useProfitSummary,
+} from "@/hooks/useDashboardReport";
 import { useTransactionsApi } from "@/hooks/useTransactionsApi";
 import { accentMap, borderMap, fontMap } from "@/utils/types";
 import { useMemo } from "react";
@@ -17,7 +20,9 @@ export default function Dashboard() {
 	const { account } = useAuth();
 	const { balances, totalBalance } = useDashboardData();
 	const { transactions } = useTransactionsApi();
-	const dashboardStats = useDashboardStats(transactions);
+	const { stats: dashboardStats } = useDashboardStats();
+
+	const { totalProfit, loading: profitLoading } = useProfitSummary();
 
 	const { fontSize, compact, accent, setActive } = useDashboardUI();
 
@@ -41,6 +46,10 @@ export default function Dashboard() {
 		console.log("Notifications clicked");
 	};
 
+	if (profitLoading) {
+		return <div>Loading profit data...</div>;
+	}
+
 	return (
 		<>
 			<div
@@ -49,7 +58,6 @@ export default function Dashboard() {
 				<DashboardHeader
 					userName={account?.name}
 					accentClass={accentClass}
-					// onAddTransaction={openModal}
 					onExport={handleExport}
 					onNotificationClick={handleNotificationClick}
 					notifications={3}
@@ -57,7 +65,7 @@ export default function Dashboard() {
 
 				<KpiCards
 					balances={balances}
-					totalProfit={0}
+					totalProfit={totalProfit}
 					accentClass={accentClass}
 					compact={compact}
 					accent={accent}
@@ -76,12 +84,7 @@ export default function Dashboard() {
 					compact={compact}
 				/>
 
-				<Stats
-					dashboardStats={dashboardStats}
-					compact={compact}
-					accentBorderClass={accentBorderClass}
-					accentClass={accentClass}
-				/>
+				<Stats dashboardStats={dashboardStats} />
 
 				<footer className="mt-8 text-sm text-slate-500 text-center">
 					Built with Tailwind • Clean UI • Settings available

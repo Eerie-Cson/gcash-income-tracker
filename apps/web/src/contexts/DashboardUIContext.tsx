@@ -1,14 +1,14 @@
 "use client";
 
+import { useLocalSettings } from "@/hooks/useLocalSettings";
+import { Accent, FontSize, NavigationType, NavItemId } from "@/utils/types";
 import React, {
 	createContext,
-	useContext,
-	useState,
 	ReactNode,
+	useContext,
 	useMemo,
+	useState,
 } from "react";
-import { useLocalSettings } from "@/hooks/useLocalSettings";
-import { NavItemId, FontSize, Accent } from "@/utils/types";
 
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
@@ -34,7 +34,7 @@ const DashboardUIContext = createContext<DashboardUI | undefined>(undefined);
 export function DashboardUIProvider({ children }: { children: ReactNode }) {
 	const [mobileOpen, setMobileOpen] = useState(false);
 	const [settingsOpen, setSettingsOpen] = useState(false);
-	const [active, setActive] = useState<NavItemId>("dashboard");
+	const [active, setActive] = useState<NavItemId>(NavigationType.Dashboard);
 	const [collapsed, setCollapsed] = useState(false);
 
 	const { fontSize, setFontSize, compact, setCompact, accent, setAccent } =
