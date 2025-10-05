@@ -12,8 +12,6 @@ import React, {
 type SetState<T> = React.Dispatch<React.SetStateAction<T>>;
 
 interface DashboardUI {
-	mobileOpen: boolean;
-	setMobileOpen: SetState<boolean>;
 	active: NavItemId;
 	setActive: SetState<NavItemId>;
 }
@@ -21,17 +19,14 @@ interface DashboardUI {
 const DashboardUIContext = createContext<DashboardUI | undefined>(undefined);
 
 export function DashboardUIProvider({ children }: { children: ReactNode }) {
-	const [mobileOpen, setMobileOpen] = useState(false);
 	const [active, setActive] = useState<NavItemId>(NavigationType.Dashboard);
 
 	const value = useMemo(
 		() => ({
-			mobileOpen,
-			setMobileOpen,
 			active,
 			setActive,
 		}),
-		[mobileOpen, active]
+		[active]
 	);
 
 	return (

@@ -76,7 +76,7 @@ export default function Sidebar({
 					})}
 				</nav>
 
-				<div className="mt-6 rounded-2xl bg-slate-800 border border-slate-700 shadow-sm overflow-hidden">
+				<div className="mt-16 rounded-2xl bg-slate-800 border border-slate-700 shadow-sm overflow-hidden">
 					<div className="px-5 pt-5 pb-3">
 						<div className="flex items-center gap-2 mb-1">
 							<div className="w-8 h-8 rounded-xl bg-emerald-900/50 flex items-center justify-center">

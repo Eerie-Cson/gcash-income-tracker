@@ -1,14 +1,7 @@
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { CreatePayload, useTransactionsApi } from "@/hooks/useTransactionsApi";
 import GreenButton from "@/ui/AddTransactionButton";
-import {
-	Bell,
-	Clock,
-	Download,
-	Filter,
-	MoreVertical,
-	Search,
-} from "lucide-react";
+import { Bell, Clock, Download, Filter, Search } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import AddTransactionModal from "../transaction/AddTransactionModal";
@@ -88,7 +81,7 @@ const DashboardHeader = ({
 
 				{/* Right side - Actions & Notifications */}
 				<div className="flex items-center gap-3">
-					{/* Search - Hidden on mobile */}
+					{/* Search */}
 					<div className="hidden lg:flex items-center bg-white rounded-lg border border-slate-200 px-3 py-2 min-w-[220px] shadow-sm">
 						<Search className="w-4 h-4 text-slate-400 mr-2 flex-shrink-0" />
 						<input
@@ -98,7 +91,7 @@ const DashboardHeader = ({
 						/>
 					</div>
 
-					{/* Filter Button - Hidden on small screens */}
+					{/* Filter Button */}
 					<button
 						className="hidden md:flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
 						aria-label="Filter transactions"
@@ -107,7 +100,7 @@ const DashboardHeader = ({
 						<span className="text-sm font-medium text-slate-700">Filter</span>
 					</button>
 
-					{/* Export Button - Hidden on small screens */}
+					{/* Export Button */}
 					<button
 						onClick={onExport}
 						className="hidden md:flex items-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
@@ -117,17 +110,7 @@ const DashboardHeader = ({
 						<span className="text-sm font-medium text-slate-700">Export</span>
 					</button>
 
-					{/* Add Transaction Button - Primary CTA with accent color */}
-					{/* <button
-						onClick={onAddTransaction}
-						className={`cursor-pointer flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:opacity-90 transition-opacity font-medium shadow-sm`}
-						aria-label="Add new transaction"
-					>
-						<Plus className="w-4 h-4" />
-						<span className="hidden sm:inline">Add Transaction</span>
-						<span className="sm:hidden">Add</span>
-					</button> */}
-
+					{/* Add Transaction Button */}
 					<GreenButton openModal={openModal} />
 
 					{/* Notifications */}
@@ -144,14 +127,6 @@ const DashboardHeader = ({
 								{notifications > 99 ? "99+" : notifications}
 							</span>
 						)}
-					</button>
-
-					{/* More Options - Mobile menu */}
-					<button
-						className="lg:hidden p-2 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
-						aria-label="More options"
-					>
-						<MoreVertical className="w-5 h-5 text-slate-600" />
 					</button>
 				</div>
 			</div>
