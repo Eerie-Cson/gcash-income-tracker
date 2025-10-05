@@ -6,9 +6,7 @@ import { TransactionsProvider } from "@/contexts/TransactionsContext";
 export default function DashboardPage() {
 	return (
 		<ProtectedRoute>
-			<TransactionsProvider>
-				<Dashboard />
-			</TransactionsProvider>
+			<Dashboard />
 		</ProtectedRoute>
 	);
 }

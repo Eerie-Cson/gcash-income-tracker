@@ -1,6 +1,6 @@
 "use client";
-import React, { createContext, useContext, ReactNode } from "react";
-import { useTransactionsApi, CreatePayload } from "@/hooks/useTransactionsApi";
+import { useTransactionsApi } from "@/hooks/useTransactionsApi";
+import { createContext, ReactNode, useContext } from "react";
 
 const TransactionsContext = createContext<
 	ReturnType<typeof useTransactionsApi> | undefined

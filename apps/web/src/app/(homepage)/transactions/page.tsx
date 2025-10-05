@@ -7,9 +7,7 @@ import { TransactionsProvider } from "@/contexts/TransactionsContext";
 export default function TransactionsPage() {
 	return (
 		<ProtectedRoute>
-			<TransactionsProvider>
-				<Transaction />
-			</TransactionsProvider>
+			<Transaction />
 		</ProtectedRoute>
 	);
 }

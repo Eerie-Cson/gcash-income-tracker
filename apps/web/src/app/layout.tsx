@@ -1,3 +1,4 @@
+import { TransactionsProvider } from "@/contexts/TransactionsContext";
 import { AuthProvider } from "../contexts/AuthContext";
 import { DashboardUIProvider } from "../contexts/DashboardUIContext";
 import "./globals.css";
@@ -20,7 +21,9 @@ export default function RootLayout({
 			</head>
 			<body>
 				<AuthProvider>
-					<DashboardUIProvider>{children}</DashboardUIProvider>
+					<DashboardUIProvider>
+						<TransactionsProvider>{children}</TransactionsProvider>
+					</DashboardUIProvider>
 				</AuthProvider>
 			</body>
 		</html>
