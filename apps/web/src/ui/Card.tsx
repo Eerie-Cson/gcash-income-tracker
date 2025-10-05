@@ -5,7 +5,6 @@ interface CardProps {
 	title: string;
 	value: string | number;
 	subtitle?: string;
-	accentClass?: string;
 	children?: React.ReactNode;
 	className?: string;
 }
@@ -14,7 +13,6 @@ export default function Card({
 	title,
 	value,
 	subtitle,
-	accentClass = "text-emerald-600",
 	children,
 	className = "",
 }: CardProps) {
@@ -26,7 +24,7 @@ export default function Card({
 				<div className="flex items-start justify-between gap-4">
 					<div>
 						<div className="text-sm text-slate-500">{title}</div>
-						<div className={`mt-2 text-2xl font-bold ${accentClass}`}>
+						<div className="mt-2 text-2xl font-bold text-emerald-600">
 							{value}
 						</div>
 						{subtitle && (

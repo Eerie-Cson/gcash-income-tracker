@@ -11,7 +11,6 @@ interface DashboardHeaderProps {
 	notifications?: number;
 	onExport?: () => void;
 	onNotificationClick?: () => void;
-	accentClass?: string;
 }
 
 const DashboardHeader = ({
@@ -19,7 +18,6 @@ const DashboardHeader = ({
 	notifications = 0,
 	onExport,
 	onNotificationClick,
-	accentClass = "text-emerald-600",
 }: DashboardHeaderProps) => {
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -68,7 +66,7 @@ const DashboardHeader = ({
 				{/* Left side - Greeting & Date */}
 				<div className="flex flex-col">
 					<div className="flex items-center gap-3 mb-1">
-						<h1 className={`text-2xl lg:text-3xl font-bold ${accentClass}`}>
+						<h1 className="text-2xl lg:text-3xl font-bold text-emerald-600">
 							Good {getGreeting()}, {firstName}!
 						</h1>
 						<div className="hidden sm:flex items-center gap-1 text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
@@ -131,7 +129,7 @@ const DashboardHeader = ({
 				</div>
 			</div>
 
-			{/* Breadcrumb Navigation with accent color */}
+			{/* Breadcrumb Navigation */}
 			<nav
 				className="flex items-center text-sm text-slate-500 mb-4"
 				aria-label="Breadcrumb navigation"
@@ -143,7 +141,7 @@ const DashboardHeader = ({
 					Home
 				</Link>
 				<span className="mx-2 text-slate-400">/</span>
-				<span className={`font-medium ${accentClass} cursor-pointer`}>
+				<span className="font-medium text-emerald-600 cursor-pointer">
 					Dashboard
 				</span>
 			</nav>

@@ -6,10 +6,8 @@ import { Transaction, TransactionType } from "@/utils/types";
 
 export default function TransactionsList({
 	transactions = [],
-	compact = false,
 }: {
 	transactions: Transaction[];
-	compact?: boolean;
 }) {
 	return (
 		<div className="divide-y divide-slate-100">
@@ -18,9 +16,7 @@ export default function TransactionsList({
 				return (
 					<div
 						key={t.id}
-						className={`py-4 flex items-center justify-between gap-4 ${
-							compact ? "py-2" : "py-4"
-						}`}
+						className="flex items-center justify-between gap-4 py-2"
 					>
 						<div className="flex items-center gap-4 min-w-0">
 							<div

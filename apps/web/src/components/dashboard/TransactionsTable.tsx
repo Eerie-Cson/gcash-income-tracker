@@ -5,16 +5,12 @@ import { Transaction, NavItemId, NavigationType } from "@/utils/types";
 import { useRouter } from "next/navigation";
 
 interface TransactionsTableProps {
-	accentClass: string;
 	transactions: Transaction[];
 	setActive: Dispatch<SetStateAction<NavItemId>>;
-	compact?: boolean;
 }
 const TransactionsTable = ({
-	accentClass,
 	transactions,
 	setActive,
-	compact,
 }: TransactionsTableProps) => {
 	const router = useRouter();
 	const recentTransactions = transactions.slice(0, 5);
@@ -36,7 +32,7 @@ const TransactionsTable = ({
 			<div className="p-6 pb-4 border-b border-slate-50">
 				<div className="flex items-center justify-between mb-3">
 					<div>
-						<h2 className={`text-xl ${accentClass} font-bold`}>
+						<h2 className="text-xl text-emerald-600 font-bold">
 							Recent Transactions
 						</h2>
 						<p className="text-sm text-slate-500 mt-1">
@@ -78,10 +74,7 @@ const TransactionsTable = ({
 			{/* Transactions List */}
 			<div className="p-6 pt-4">
 				{recentTransactions.length > 0 ? (
-					<TransactionsList
-						transactions={recentTransactions}
-						compact={compact}
-					/>
+					<TransactionsList transactions={recentTransactions} />
 				) : (
 					<div className="text-center py-12">
 						<div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -106,7 +99,7 @@ const TransactionsTable = ({
 							setActive(NavigationType.Transactions);
 							router.push("/transactions/");
 						}}
-						className={`cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition-all duration-200 text-sm font-medium hover:border-slate-300 group`}
+						className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition-all duration-200 text-sm font-medium hover:border-slate-300 group"
 					>
 						<span>View all transactions</span>
 						<ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />

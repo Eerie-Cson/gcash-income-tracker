@@ -8,8 +8,6 @@ import {
 	useProfitSummary,
 } from "@/hooks/useDashboardReport";
 import { useTransactionsApi } from "@/hooks/useTransactionsApi";
-import { accentMap, borderMap } from "@/utils/types";
-import { useMemo } from "react";
 import DashboardHeader from "./Header";
 import KpiCards from "./KpiCards";
 import Stats from "./Stats";
@@ -22,16 +20,7 @@ export default function Dashboard() {
 	const { transactions } = useTransactionsApi();
 	const { stats: dashboardStats } = useDashboardStats();
 	const { totalProfit } = useProfitSummary();
-	const { compact, accent, setActive } = useDashboardUI();
-
-	const accentClass = useMemo(
-		() => accentMap[accent as keyof typeof accentMap] || accentMap.emerald,
-		[accent]
-	);
-	const accentBorderClass = useMemo(
-		() => borderMap[accent as keyof typeof borderMap] || borderMap.emerald,
-		[accent]
-	);
+	const { setActive } = useDashboardUI();
 
 	const handleExport = () => {
 		console.log("Export clicked");
@@ -45,32 +34,16 @@ export default function Dashboard() {
 			<div className="space-y-6">
 				<DashboardHeader
 					userName={account?.name}
-					accentClass={accentClass}
 					onExport={handleExport}
 					onNotificationClick={handleNotificationClick}
 					notifications={3}
 				/>
 
-				<KpiCards
-					balances={balances}
-					totalProfit={totalProfit}
-					accentClass={accentClass}
-					compact={compact}
-					accent={accent}
-				/>
+				<KpiCards balances={balances} totalProfit={totalProfit} />
 
-				<TotalBalanceSummary
-					totalBalance={totalBalance}
-					accentBorderClass={accentBorderClass}
-					accentClass={accentClass}
-				/>
+				<TotalBalanceSummary totalBalance={totalBalance} />
 
-				<TransactionsTable
-					setActive={setActive}
-					accentClass={accentClass}
-					transactions={transactions}
-					compact={compact}
-				/>
+				<TransactionsTable setActive={setActive} transactions={transactions} />
 
 				<Stats dashboardStats={dashboardStats} />
 

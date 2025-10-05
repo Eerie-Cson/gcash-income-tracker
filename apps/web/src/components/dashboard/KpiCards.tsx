@@ -9,9 +9,6 @@ enum WalletType {
 interface KpiCardsProps {
 	balances: Record<WalletType, number>;
 	totalProfit: number;
-	compact: boolean;
-	accent: string;
-	accentClass?: string;
 }
 
 export function timeAgo(date?: Date | string): string {
@@ -35,12 +32,7 @@ export function timeAgo(date?: Date | string): string {
 	return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
 }
 
-const KpiCards = ({
-	balances,
-	totalProfit,
-	compact,
-	accentClass,
-}: KpiCardsProps) => {
+const KpiCards = ({ balances, totalProfit }: KpiCardsProps) => {
 	const { transactions } = useTransactionsApi();
 
 	const lastUpdated =
@@ -48,7 +40,7 @@ const KpiCards = ({
 			? transactions[0].transactionDate
 			: undefined;
 	const profitTrend = totalProfit >= 0 ? "up" : "down";
-	const profitPercentage = 5.2; // This should be calculated from backend
+	const profitPercentage = 5.2;
 
 	const cards = [
 		{
@@ -58,8 +50,7 @@ const KpiCards = ({
 			iconColor: "text-blue-600",
 			icon: CreditCard,
 			sparkData: [8, 10, 9, 12, 14],
-			useAccent: false,
-			bgColor: `bg-blue-100`,
+			bgColor: "bg-blue-100",
 		},
 		{
 			title: "Cash",
@@ -68,8 +59,7 @@ const KpiCards = ({
 			icon: Wallet,
 			sparkData: [1000, 120, 580, 150, 1100],
 			iconColor: "text-green-600",
-			useAccent: false,
-			bgColor: `bg-green-100`,
+			bgColor: "bg-green-100",
 		},
 		{
 			title: "Profit",
@@ -88,11 +78,7 @@ const KpiCards = ({
 	];
 
 	return (
-		<section
-			className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  ${
-				compact ? "gap-3" : "gap-6"
-			} mb-8`}
-		>
+		<section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
 			{cards.map((card) => {
 				const IconComponent = card.icon;
 
@@ -100,15 +86,15 @@ const KpiCards = ({
 					<div
 						key={card.title}
 						className={`bg-gradient-to-b from-slate-50 to-green-50 rounded-2xl p-6 shadow-sm ${
-							card.title === "Profit" ? `border ${card.borderColor}` : {}
+							card.title === "Profit" ? `border ${card.borderColor}` : ""
 						} hover:shadow-lg transition-all duration-300 group`}
 					>
 						{/* Header with icon and title */}
 						<div className="flex items-start justify-between mb-4">
 							<div
 								className={`p-3 rounded-xl ${card.bgColor} ${
-									card.title === "Profit" ? `border  ${card.borderColor}` : {}
-								}  group-hover:scale-105 transition-transform duration-200`}
+									card.title === "Profit" ? `border ${card.borderColor}` : ""
+								} group-hover:scale-105 transition-transform duration-200`}
 							>
 								<IconComponent className={`w-6 h-6 ${card.iconColor}`} />
 							</div>
@@ -128,8 +114,6 @@ const KpiCards = ({
 										? totalProfit >= 0
 											? "text-emerald-700"
 											: "text-rose-700"
-										: card.useAccent
-										? accentClass
 										: card.iconColor
 								}`}
 							>
@@ -141,10 +125,7 @@ const KpiCards = ({
 						<div className="flex items-center justify-between">
 							{card.sparkData ? (
 								<div className="flex-1">
-									<MiniSpark
-										values={card.sparkData}
-										accent={`${card.title === ""}`}
-									/>
+									<MiniSpark values={card.sparkData} />
 								</div>
 							) : card.trend ? (
 								<div

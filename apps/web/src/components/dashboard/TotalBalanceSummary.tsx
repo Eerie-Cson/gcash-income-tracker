@@ -22,15 +22,7 @@ export function timeAgo(date?: Date | string): string {
 	return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
 }
 
-const TotalBalanceSummary = ({
-	totalBalance,
-	accentBorderClass,
-	accentClass,
-}: {
-	totalBalance: number;
-	accentBorderClass: string;
-	accentClass: string;
-}) => {
+const TotalBalanceSummary = ({ totalBalance }: { totalBalance: number }) => {
 	const growthPercentage = 5.2;
 	const isPositiveGrowth = growthPercentage > 0;
 	const { transactions } = useTransactionsApi();
@@ -41,27 +33,11 @@ const TotalBalanceSummary = ({
 			: undefined;
 
 	return (
-		<section
-			className={`bg-gradient-to-r from-slate-50 via-white to-${
-				accentClass.split("-")[1]
-			}-50 rounded-2xl p-6 shadow-sm border ${accentBorderClass} mb-8 relative overflow-hidden group hover:shadow-md transition-all duration-300`}
-		>
+		<section className="bg-gradient-to-r from-slate-50 via-white to-emerald-50 rounded-2xl p-6 shadow-sm border border-emerald-200 mb-8 relative overflow-hidden group hover:shadow-md transition-all duration-300">
 			{/* Background Pattern */}
 			<div className="absolute inset-0 opacity-5">
-				<div
-					className={`absolute top-0 right-0 w-32 h-32 ${accentClass.replace(
-						"text-",
-						"bg-"
-					)} rounded-full -translate-y-16 translate-x-16`}
-				></div>
-				<div
-					className={`absolute bottom-0 left-0 w-24 h-24 ${accentClass
-						.replace("text-", "bg-")
-						.replace(
-							"-600",
-							"-300"
-						)} rounded-full translate-y-12 -translate-x-12`}
-				></div>
+				<div className="absolute top-0 right-0 w-32 h-32 bg-emerald-600 rounded-full -translate-y-16 translate-x-16"></div>
+				<div className="absolute bottom-0 left-0 w-24 h-24 bg-emerald-300 rounded-full translate-y-12 -translate-x-12"></div>
 			</div>
 
 			<div className="relative">
@@ -70,12 +46,7 @@ const TotalBalanceSummary = ({
 					<div className="flex-1">
 						<div className="flex items-center gap-3 mb-2">
 							<div className="flex items-center gap-2">
-								<div
-									className={`w-3 h-3 rounded-full ${accentClass.replace(
-										"text-",
-										"bg-"
-									)} animate-pulse`}
-								></div>
+								<div className="w-3 h-3 rounded-full bg-emerald-600 animate-pulse"></div>
 								<span className="text-sm text-slate-600 font-semibold uppercase tracking-wider">
 									Total Balance
 								</span>
@@ -97,9 +68,7 @@ const TotalBalanceSummary = ({
 						</div>
 
 						<div className="flex items-baseline gap-4">
-							<span
-								className={`text-4xl lg:text-4xl font-extralight ${accentClass} tracking-tight`}
-							>
+							<span className="text-4xl lg:text-4xl font-extralight text-emerald-600 tracking-tight">
 								₱{totalBalance.toLocaleString()}
 							</span>
 							<div
