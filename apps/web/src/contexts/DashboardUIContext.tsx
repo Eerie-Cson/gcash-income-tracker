@@ -19,8 +19,6 @@ interface DashboardUI {
 	setSettingsOpen: SetState<boolean>;
 	active: NavItemId;
 	setActive: SetState<NavItemId>;
-	collapsed: boolean;
-	setCollapsed: SetState<boolean>;
 	fontSize: FontSize;
 	setFontSize: SetState<FontSize>;
 	compact: boolean;
@@ -35,7 +33,6 @@ export function DashboardUIProvider({ children }: { children: ReactNode }) {
 	const [mobileOpen, setMobileOpen] = useState(false);
 	const [settingsOpen, setSettingsOpen] = useState(false);
 	const [active, setActive] = useState<NavItemId>(NavigationType.Dashboard);
-	const [collapsed, setCollapsed] = useState(false);
 
 	const { fontSize, setFontSize, compact, setCompact, accent, setAccent } =
 		useLocalSettings({
@@ -52,8 +49,6 @@ export function DashboardUIProvider({ children }: { children: ReactNode }) {
 			setSettingsOpen,
 			active,
 			setActive,
-			collapsed,
-			setCollapsed,
 			fontSize,
 			setFontSize,
 			compact,
@@ -65,7 +60,6 @@ export function DashboardUIProvider({ children }: { children: ReactNode }) {
 			mobileOpen,
 			settingsOpen,
 			active,
-			collapsed,
 			fontSize,
 			setFontSize,
 			compact,

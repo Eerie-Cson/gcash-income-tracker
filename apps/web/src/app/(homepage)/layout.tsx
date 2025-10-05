@@ -19,14 +19,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 	const { balances } = useDashboardData();
 	const { logout } = useAuth();
 
-	const {
-		setSettingsOpen,
-		active,
-		setActive,
-		collapsed,
-		setCollapsed,
-		fontSize,
-	} = useDashboardUI();
+	const { setSettingsOpen, active, setActive, fontSize } = useDashboardUI();
 
 	const fontClass = useMemo(
 		() => fontMap[fontSize as keyof typeof fontMap] || fontMap.large,
@@ -64,11 +57,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 					logout={logout}
 				/>
 
-				<main
-					className={`flex-1 min-h-screen overflow-auto transition-all duration-200 bg-gradient-to-bl from-teal-100 via-white to-teal-100 ${
-						collapsed ? "md:pl-4" : "md:pl-6"
-					}`}
-				>
+				<main className="flex-1 min-h-screen overflow-auto bg-gradient-to-bl from-teal-100 via-white to-teal-100 md:pl-6">
 					{children}
 				</main>
 			</div>
