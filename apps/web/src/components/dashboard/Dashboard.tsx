@@ -8,7 +8,7 @@ import {
 	useProfitSummary,
 } from "@/hooks/useDashboardReport";
 import { useTransactionsApi } from "@/hooks/useTransactionsApi";
-import { accentMap, borderMap, fontMap } from "@/utils/types";
+import { accentMap, borderMap } from "@/utils/types";
 import { useMemo } from "react";
 import DashboardHeader from "./Header";
 import KpiCards from "./KpiCards";
@@ -21,15 +21,9 @@ export default function Dashboard() {
 	const { balances, totalBalance } = useDashboardData();
 	const { transactions } = useTransactionsApi();
 	const { stats: dashboardStats } = useDashboardStats();
+	const { totalProfit } = useProfitSummary();
+	const { compact, accent, setActive } = useDashboardUI();
 
-	const { totalProfit, loading: profitLoading } = useProfitSummary();
-
-	const { fontSize, compact, accent, setActive } = useDashboardUI();
-
-	const fontClass = useMemo(
-		() => fontMap[fontSize] || fontMap.large,
-		[fontSize]
-	);
 	const accentClass = useMemo(
 		() => accentMap[accent as keyof typeof accentMap] || accentMap.emerald,
 		[accent]
@@ -46,15 +40,9 @@ export default function Dashboard() {
 		console.log("Notifications clicked");
 	};
 
-	if (profitLoading) {
-		return <div>Loading profit data...</div>;
-	}
-
 	return (
-		<>
-			<div
-				className={`bg-gradient-to-bl from-teal-100 via-white to-teal-100 flex-1 h-screen overflow-auto px-6 py-8 transition-all duration-200 ${fontClass}`}
-			>
+		<div className="p-4 md:p-6">
+			<div className="space-y-6">
 				<DashboardHeader
 					userName={account?.name}
 					accentClass={accentClass}
@@ -90,25 +78,6 @@ export default function Dashboard() {
 					Built with Tailwind • Clean UI • Settings available
 				</footer>
 			</div>
-
-			{/* <MobileDrawer
-				mobileOpen={mobileOpen}
-				nav={nav}
-				setActive={() => {}}
-				setMobileOpen={setMobileOpen}
-				setSettingsOpen={setSettingsOpen}
-			/>
-
-			<SettingsPanel
-				open={settingsOpen}
-				setOpen={setSettingsOpen}
-				fontSize={fontSize}
-				setFontSize={setFontSize}
-				compact={compact}
-				setCompact={setCompact}
-				accent={accent}
-				setAccent={setAccent}
-			/> */}
-		</>
+		</div>
 	);
 }

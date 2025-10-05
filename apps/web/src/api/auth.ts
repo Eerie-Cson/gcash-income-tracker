@@ -3,7 +3,6 @@ import api from "./axios";
 export async function loginApi(email: string, password: string) {
 	try {
 		const res = await api.post("/auth/login", { email, password });
-		console.log("API Base URL:", process.env.NEXT_PUBLIC_API_URL);
 
 		return { data: res.data, success: true };
 	} catch (err: unknown) {

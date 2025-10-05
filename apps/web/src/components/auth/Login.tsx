@@ -106,7 +106,7 @@ export default function LoginForm({ onLogin, onRegister }: LoginFormProps) {
 					<button
 						type="submit"
 						disabled={isLoading}
-						className="w-full py-3 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold shadow-md hover:opacity-90 disabled:opacity-50"
+						className="cursor-pointer w-full py-3 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold shadow-md hover:opacity-90 disabled:opacity-50"
 					>
 						{isLoading ? "Signing in..." : "Sign in"}
 					</button>

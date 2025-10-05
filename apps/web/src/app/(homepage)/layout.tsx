@@ -2,11 +2,11 @@
 
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import Sidebar from "@/components/dashboard/Sidebar";
-// import MobileDrawer from "@/components/mobile/MobileDrawer";
-// import SettingsPanel from "@/components/settings/SettingsPanel";
 import { nav } from "@/const/NavigationList";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { useProfitSummary } from "@/hooks/useDashboardReport";
+import Spinner from "@/ui/Spinner";
 import { fontMap, NavigationType } from "@/utils/types";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useMemo } from "react";
@@ -14,27 +14,18 @@ import {
 	DashboardUIProvider,
 	useDashboardUI,
 } from "../../contexts/DashboardUIContext";
-import { useProfitSummary } from "@/hooks/useDashboardReport";
 
 function InnerLayout({ children }: { children: React.ReactNode }) {
 	const { balances } = useDashboardData();
 	const { logout } = useAuth();
 
 	const {
-		// mobileOpen,
-		// setMobileOpen,
-		// settingsOpen,
 		setSettingsOpen,
 		active,
 		setActive,
 		collapsed,
 		setCollapsed,
 		fontSize,
-		// setFontSize,
-		// compact,
-		// setCompact,
-		// accent,
-		// setAccent,
 	} = useDashboardUI();
 
 	const fontClass = useMemo(
@@ -55,9 +46,9 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 			setActive(NavigationType.Configurations);
 	}, [pathname, setActive]);
 
-	const { totalProfit, loading: profitLoading } = useProfitSummary();
-	if (profitLoading) {
-		return <div>Loading profit data...</div>;
+	const { totalProfit, loading: isLoading } = useProfitSummary();
+	if (isLoading) {
+		return <Spinner></Spinner>;
 	}
 
 	return (
@@ -83,25 +74,6 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 					{children}
 				</main>
 			</div>
-
-			{/* <MobileDrawer
-				mobileOpen={mobileOpen}
-				nav={nav}
-				setActive={setActive}
-				setMobileOpen={setMobileOpen}
-				setSettingsOpen={setSettingsOpen}
-			/>
-
-			<SettingsPanel
-				open={settingsOpen}
-				setOpen={setSettingsOpen}
-				fontSize={fontSize}
-				setFontSize={setFontSize}
-				compact={compact}
-				setCompact={setCompact}
-				accent={accent}
-				setAccent={setAccent}
-			/> */}
 		</ProtectedRoute>
 	);
 }
