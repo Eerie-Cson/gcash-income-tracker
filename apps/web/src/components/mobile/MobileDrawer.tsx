@@ -1,20 +1,18 @@
 "use client";
-import React from "react";
-import { X } from "lucide-react";
 import { NavItem, NavItemId } from "@/utils/types";
+import { X } from "lucide-react";
+import React from "react";
 
 export default function MobileDrawer({
 	mobileOpen,
 	nav,
 	setActive,
 	setMobileOpen,
-	setSettingsOpen,
 }: {
 	mobileOpen: boolean;
 	nav: NavItem[];
 	setActive: (id: NavItemId) => void;
 	setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
-	setSettingsOpen: (v: boolean) => void;
 }) {
 	if (!mobileOpen) return null;
 	return (
@@ -48,15 +46,6 @@ export default function MobileDrawer({
 						);
 					})}
 				</nav>
-
-				<div className="mt-6">
-					<button
-						onClick={() => setSettingsOpen(true)}
-						className="w-full px-3 py-2 rounded-md border border-slate-200"
-					>
-						Settings
-					</button>
-				</div>
 			</div>
 		</div>
 	);

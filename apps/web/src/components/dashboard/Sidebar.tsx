@@ -11,7 +11,6 @@ import {
 	Wallet,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React from "react";
 
 interface SidebarProps {
 	nav: NavItem[];
@@ -19,7 +18,6 @@ interface SidebarProps {
 	setActive: (id: NavItemId) => void;
 	balances: Record<WallterType, number>;
 	totalProfit: number;
-	setSettingsOpen: (v: boolean) => void;
 	logout: () => void;
 }
 
@@ -29,7 +27,6 @@ export default function Sidebar({
 	setActive,
 	balances = { cash: 0, gcash: 0 } as Record<WallterType, number>,
 	totalProfit = 0,
-	setSettingsOpen,
 	logout,
 }: SidebarProps) {
 	const totalBal = (balances?.cash || 0) + (balances?.gcash || 0);
@@ -155,7 +152,6 @@ export default function Sidebar({
 					</button>
 
 					<button
-						onClick={() => setSettingsOpen(true)}
 						className="cursor-pointer w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 hover:text-white transition-colors"
 						title="Settings"
 					>

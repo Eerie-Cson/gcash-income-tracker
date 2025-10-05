@@ -1,17 +1,15 @@
 "use client";
+import { Menu, X } from "lucide-react";
 import React from "react";
-import { Menu, X, Settings } from "lucide-react";
 
 export default function Topbar({
 	mobileOpen,
 	setMobileOpen,
 	balances,
-	setSettingsOpen,
 }: {
 	mobileOpen: boolean;
 	setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	balances: { cash: number; gcash: number };
-	setSettingsOpen: (v: boolean) => void;
 }) {
 	return (
 		<div className="md:hidden bg-white border-b">
@@ -39,12 +37,6 @@ export default function Topbar({
 					>
 						{`₱${(balances.cash + balances.gcash).toLocaleString()}`}
 					</div>
-					<button
-						onClick={() => setSettingsOpen(true)}
-						className="p-2 rounded-md hover:bg-slate-100"
-					>
-						<Settings className="w-5 h-5" />
-					</button>
 				</div>
 			</div>
 		</div>

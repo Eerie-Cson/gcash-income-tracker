@@ -7,9 +7,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useProfitSummary } from "@/hooks/useDashboardReport";
 import Spinner from "@/ui/Spinner";
-import { fontMap, NavigationType } from "@/utils/types";
+import { NavigationType } from "@/utils/types";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import {
 	DashboardUIProvider,
 	useDashboardUI,
@@ -19,12 +19,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 	const { balances } = useDashboardData();
 	const { logout } = useAuth();
 
-	const { setSettingsOpen, active, setActive, fontSize } = useDashboardUI();
-
-	const fontClass = useMemo(
-		() => fontMap[fontSize as keyof typeof fontMap] || fontMap.large,
-		[fontSize]
-	);
+	const { active, setActive } = useDashboardUI();
 
 	const pathname = usePathname();
 	useEffect(() => {
@@ -46,14 +41,13 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 
 	return (
 		<ProtectedRoute>
-			<div className={`flex h-screen ${fontClass}`}>
+			<div className="flex h-screen">
 				<Sidebar
 					nav={nav}
 					active={active}
 					setActive={setActive}
 					balances={balances}
 					totalProfit={totalProfit}
-					setSettingsOpen={setSettingsOpen}
 					logout={logout}
 				/>
 
