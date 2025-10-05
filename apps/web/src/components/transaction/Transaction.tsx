@@ -12,7 +12,7 @@ import {
 	AlertCircle,
 	X,
 } from "lucide-react";
-import { useTransactionsApi } from "@/hooks/useTransactionsApi";
+import { useTransactions } from "@/contexts/TransactionsContext";
 import { NotificationType, TransactionType } from "@/utils/types";
 import AddTransactionModal from "./AddTransactionModal";
 import Notification from "../../ui/Notification";
@@ -29,7 +29,7 @@ const TransactionsSection: React.FC = () => {
 		creating,
 		createTransaction,
 		refetch,
-	} = useTransactionsApi();
+	} = useTransactions();
 
 	const [isOpen, setIsOpen] = useState(false);
 
