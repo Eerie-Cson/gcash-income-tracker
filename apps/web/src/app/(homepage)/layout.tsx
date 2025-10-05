@@ -62,8 +62,6 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 					totalProfit={totalProfit}
 					setSettingsOpen={setSettingsOpen}
 					logout={logout}
-					collapsed={collapsed}
-					setCollapsed={setCollapsed}
 				/>
 
 				<main

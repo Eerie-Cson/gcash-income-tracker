@@ -1,4 +1,3 @@
-// components/ui/Spinner.tsx
 import React from "react";
 
 type SpinnerProps = {

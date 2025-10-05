@@ -1,4 +1,3 @@
-// hooks/useConfiguration.ts
 import { manualWalletAdjustment } from "@/api/wallet";
 import { saveTransactionFees, getTransactionFees } from "@/api/profit";
 import { useDashboardData } from "@/hooks/useDashboardData";
@@ -63,7 +62,6 @@ export function useConfiguration() {
 			try {
 				setIsSaving(true);
 
-				// Update wallet balances
 				await Promise.all([
 					manualWalletAdjustment({
 						amount: data.cashBalance,
@@ -75,7 +73,6 @@ export function useConfiguration() {
 					}),
 				]);
 
-				// Save transaction fees
 				await saveTransactionFees(
 					data.feeStructures.map((feeStructure) => ({
 						minAmount: feeStructure.minAmount,
@@ -84,7 +81,6 @@ export function useConfiguration() {
 					}))
 				);
 
-				// Refetch data instead of page reload
 				await Promise.all([refetchDashboardData(), loadFeeStructures()]);
 
 				return { success: true };

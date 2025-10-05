@@ -1,21 +1,13 @@
 "use client";
 
-// import { useDashboardUI } from "@/contexts/DashboardUIContext";
-// import { accentMap, borderMap, fontMap } from "@/utils/types";
 import {
 	AlertCircle,
-	// Check,
 	DollarSign,
 	Info,
 	Plus,
 	Save,
-	// Settings,
 	Trash2,
 	Wallet,
-	// X,
-	// CheckCircle2,
-	// XCircle,
-	// AlertTriangle,
 } from "lucide-react";
 import { useCallback, useMemo, useState, useEffect } from "react";
 import Link from "next/link";
@@ -28,31 +20,27 @@ interface FeeStructure {
 	fee: number;
 }
 
+interface ConfigurationData {
+	cashBalance: number;
+	gcashBalance: number;
+	feeStructures: FeeStructure[];
+}
+
 interface ConfigurationProps {
-	onSave?: (data: {
-		cashBalance: number;
-		gcashBalance: number;
-		feeStructures: FeeStructure[];
-	}) => void;
-	initialData?: {
-		cashBalance: number;
-		gcashBalance: number;
-		feeStructures: FeeStructure[];
-	};
+	onSave?: (
+		data: ConfigurationData
+	) => Promise<{ success: boolean; error?: string }>;
+
+	initialData?: ConfigurationData;
 }
 
 export default function Configuration({
 	onSave,
 	initialData,
 }: ConfigurationProps) {
-	useEffect(() => {
-		if (initialData) {
-			setCashBalance(initialData.cashBalance);
-			setGcashBalance(initialData.gcashBalance);
-			setFeeStructures(initialData.feeStructures);
-			setIsModified(false);
-		}
-	}, [initialData]);
+	const [feeStructures, setFeeStructures] = useState<FeeStructure[]>([]);
+
+	const [isSaving, setIsSaving] = useState(false);
 
 	const [cashBalance, setCashBalance] = useState<number>(
 		initialData?.cashBalance || 0
@@ -61,12 +49,6 @@ export default function Configuration({
 		initialData?.gcashBalance || 0
 	);
 
-	const [feeStructures, setFeeStructures] = useState<FeeStructure[]>(
-		initialData?.feeStructures || [
-			{ id: "1", minAmount: 1, maxAmount: 100, fee: 5 },
-			{ id: "2", minAmount: 101, maxAmount: 500, fee: 10 },
-		]
-	);
 	const [isModified, setIsModified] = useState(false);
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(
 		null
@@ -78,7 +60,15 @@ export default function Configuration({
 		message: "",
 	});
 
-	// Validation
+	useEffect(() => {
+		if (initialData) {
+			setCashBalance(initialData.cashBalance);
+			setGcashBalance(initialData.gcashBalance);
+			setFeeStructures(initialData.feeStructures);
+			setIsModified(false);
+		}
+	}, [initialData]);
+
 	const hasOverlaps = useMemo(() => {
 		const sorted = [...feeStructures].sort((a, b) => a.minAmount - b.minAmount);
 		for (let i = 0; i < sorted.length - 1; i++) {
@@ -97,7 +87,6 @@ export default function Configuration({
 
 	const isValid = !hasOverlaps && !hasEmptyRanges && feeStructures.length > 0;
 
-	// Notification handlers
 	const showNotification = useCallback(
 		(title: string, type: NotificationType, message?: string) => {
 			setNotification({
@@ -114,7 +103,6 @@ export default function Configuration({
 		setNotification((prev) => ({ ...prev, isOpen: false }));
 	}, []);
 
-	// Fee structure handlers
 	const addFeeStructure = useCallback(() => {
 		const lastStructure = [...feeStructures].sort(
 			(a, b) => b.maxAmount - a.maxAmount
@@ -149,7 +137,6 @@ export default function Configuration({
 		setShowDeleteConfirm(null);
 	}, []);
 
-	// Balance change handlers
 	const handleBalanceChange = useCallback(
 		(type: "cash" | "gcash", value: number) => {
 			if (type === "cash") {
@@ -162,8 +149,7 @@ export default function Configuration({
 		[]
 	);
 
-	// Save handler
-	const handleSave = useCallback(() => {
+	const handleSave = useCallback(async () => {
 		if (!isValid) {
 			showNotification(
 				"Configuration Invalid",
@@ -173,20 +159,32 @@ export default function Configuration({
 			return;
 		}
 
+		if (!onSave) return;
+
+		setIsSaving(true);
+
 		const data = {
 			cashBalance,
 			gcashBalance,
 			feeStructures: feeStructures.sort((a, b) => a.minAmount - b.minAmount),
 		};
 
-		onSave?.(data);
-		setIsModified(false);
+		const result = await onSave(data);
 
-		showNotification(
-			"Configuration Saved Successfully!",
-			"success",
-			"Your business configuration has been updated and is now active."
-		);
+		if (result.success) {
+			setIsModified(false);
+			showNotification(
+				"Configuration Saved Successfully!",
+				"success",
+				"Your business configuration has been updated and is now active."
+			);
+		} else {
+			showNotification(
+				"Save Failed",
+				"error",
+				result.error || "Failed to save configuration. Please try again."
+			);
+		}
 	}, [
 		cashBalance,
 		gcashBalance,
@@ -235,15 +233,15 @@ export default function Configuration({
 
 						<button
 							onClick={handleSave}
-							disabled={!isModified || !isValid}
+							disabled={!isModified || !isValid || isSaving}
 							className={`cursor-pointer flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium shadow-sm whitespace-nowrap ${
-								!isModified || !isValid
+								!isModified || !isValid || isSaving
 									? "bg-slate-100 text-slate-400 cursor-not-allowed"
 									: "bg-emerald-600 text-white hover:bg-emerald-700"
 							}`}
 						>
 							<Save className="w-4 h-4" />
-							Save Changes
+							{isSaving ? "Saving..." : "Save Changes"}
 						</button>
 					</div>
 				</div>

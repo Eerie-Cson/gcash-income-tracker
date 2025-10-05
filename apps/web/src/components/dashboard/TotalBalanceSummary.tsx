@@ -3,7 +3,6 @@ import { Calendar, RefreshCw, TrendingUp } from "lucide-react";
 
 export function timeAgo(date?: Date | string): string {
 	if (!date) return "No transactions yet";
-	// const now = new Date();
 
 	const past = typeof date === "string" ? new Date(date) : date;
 
