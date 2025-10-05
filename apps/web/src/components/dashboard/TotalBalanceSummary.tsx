@@ -1,4 +1,4 @@
-import { useTransactionsApi } from "@/hooks/useTransactionsApi";
+import { useTransactions } from "@/contexts/TransactionsContext";
 import { Calendar, RefreshCw, TrendingUp } from "lucide-react";
 
 export function timeAgo(date?: Date | string): string {
@@ -25,7 +25,7 @@ export function timeAgo(date?: Date | string): string {
 const TotalBalanceSummary = ({ totalBalance }: { totalBalance: number }) => {
 	const growthPercentage = 5.2;
 	const isPositiveGrowth = growthPercentage > 0;
-	const { transactions } = useTransactionsApi();
+	const { transactions } = useTransactions();
 
 	const lastUpdated =
 		transactions.length > 0 && transactions[0].transactionDate

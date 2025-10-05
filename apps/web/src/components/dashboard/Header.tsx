@@ -1,5 +1,6 @@
 import { useDashboardData } from "@/hooks/useDashboardData";
-import { CreatePayload, useTransactionsApi } from "@/hooks/useTransactionsApi";
+import { useTransactions } from "@/contexts/TransactionsContext";
+import { CreatePayload } from "@/hooks/useTransactionsApi";
 import GreenButton from "@/ui/AddTransactionButton";
 import { Bell, Clock, Download, Filter, Search } from "lucide-react";
 import Link from "next/link";
@@ -22,7 +23,7 @@ const DashboardHeader = ({
 	const [isOpen, setIsOpen] = useState(false);
 
 	const { refetchBalances } = useDashboardData();
-	const { creating, createTransaction } = useTransactionsApi();
+	const { creating, createTransaction } = useTransactions();
 
 	const openModal = useCallback(() => setIsOpen(true), []);
 	const closeModal = useCallback(() => setIsOpen(false), []);

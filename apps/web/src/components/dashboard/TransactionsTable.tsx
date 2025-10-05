@@ -8,10 +8,11 @@ interface TransactionsTableProps {
 	transactions: Transaction[];
 	setActive: Dispatch<SetStateAction<NavItemId>>;
 }
-const TransactionsTable = ({
+
+export default function TransactionsTable({
 	transactions,
 	setActive,
-}: TransactionsTableProps) => {
+}: TransactionsTableProps) {
 	const router = useRouter();
 	const recentTransactions = transactions.slice(0, 5);
 
@@ -108,6 +109,4 @@ const TransactionsTable = ({
 			)}
 		</section>
 	);
-};
-
-export default TransactionsTable;
+}

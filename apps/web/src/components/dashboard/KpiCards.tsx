@@ -1,4 +1,4 @@
-import { useTransactionsApi } from "@/hooks/useTransactionsApi";
+import { useTransactions } from "@/contexts/TransactionsContext";
 import MiniSpark from "@/ui/Minispark";
 import { CreditCard, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 enum WalletType {
@@ -33,7 +33,7 @@ export function timeAgo(date?: Date | string): string {
 }
 
 const KpiCards = ({ balances, totalProfit }: KpiCardsProps) => {
-	const { transactions } = useTransactionsApi();
+	const { transactions } = useTransactions();
 
 	const lastUpdated =
 		transactions.length > 0 && transactions[0].transactionDate

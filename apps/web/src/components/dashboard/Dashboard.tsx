@@ -7,7 +7,7 @@ import {
 	useDashboardStats,
 	useProfitSummary,
 } from "@/hooks/useDashboardReport";
-import { useTransactionsApi } from "@/hooks/useTransactionsApi";
+import { useTransactions } from "@/contexts/TransactionsContext";
 import DashboardHeader from "./Header";
 import KpiCards from "./KpiCards";
 import Stats from "./Stats";
@@ -17,7 +17,7 @@ import TransactionsTable from "./TransactionsTable";
 export default function Dashboard() {
 	const { account } = useAuth();
 	const { balances, totalBalance } = useDashboardData();
-	const { transactions } = useTransactionsApi();
+	const { transactions } = useTransactions();
 	const { stats: dashboardStats } = useDashboardStats();
 	const { totalProfit } = useProfitSummary();
 	const { setActive } = useDashboardUI();
